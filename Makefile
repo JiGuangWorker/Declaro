@@ -32,8 +32,10 @@ REQUIRED_DIRS := \
 	server/internal/middleware server/internal/router server/internal/config \
 	server/pkg server/migrations server/config \
 	web/packages \
-	uniapp/src/pages uniapp/src/components uniapp/src/api \
-	uniapp/src/store uniapp/src/hooks uniapp/src/utils uniapp/src/static \
+	uniapp/packages uniapp/packages/app uniapp/packages/app/src \
+	uniapp/packages/app/src/pages uniapp/packages/app/src/api \
+	uniapp/packages/app/src/store uniapp/packages/shared uniapp/packages/shared/src \
+	uniapp/tests \
 	shared/api-types shared/constants \
 	docs/prd docs/prd/mock docs/design docs/qa docs/references
 
@@ -42,8 +44,10 @@ REQUIRED_FILES := \
 	README.md Makefile \
 	server/cmd/server/main.go server/go.mod server/config/config.yaml \
 	web/package.json web/pnpm-workspace.yaml web/tsconfig.base.json \
-	uniapp/package.json uniapp/vite.config.ts uniapp/tsconfig.json \
-	uniapp/src/App.vue uniapp/src/main.ts uniapp/src/pages.json uniapp/src/manifest.json \
+	uniapp/package.json uniapp/pnpm-workspace.yaml uniapp/tsconfig.base.json \
+	uniapp/packages/app/src/pages.json uniapp/packages/app/src/manifest.json \
+	uniapp/packages/app/src/App.vue uniapp/packages/app/src/main.ts \
+	uniapp/packages/app/vite.config.ts uniapp/packages/app/tsconfig.json \
 	shared/README.md \
 	docs/prd/README.md docs/design/README.md docs/qa/README.md docs/references/README.md
 
