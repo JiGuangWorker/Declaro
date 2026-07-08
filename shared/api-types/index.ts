@@ -809,6 +809,23 @@ export interface components {
         };
     };
     responses: {
+        /** @description 请求过于频繁或触发限流 */
+        TooManyRequests: {
+            headers: {
+                /** @description 建议重试等待秒数 */
+                "Retry-After"?: number;
+                /** @description 当前接口的限流配额（每分钟最大请求数） */
+                "X-RateLimit-Limit"?: number;
+                /** @description 当前窗口剩余可用请求数 */
+                "X-RateLimit-Remaining"?: number;
+                /** @description 限流窗口重置时间（Unix 时间戳，秒） */
+                "X-RateLimit-Reset"?: number;
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
         /** @description 未授权或 token 失效 */
         Unauthorized: {
             headers: {
@@ -864,7 +881,10 @@ export interface components {
             };
         };
     };
-    parameters: never;
+    parameters: {
+        /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+        IdempotencyKey: string;
+    };
     requestBodies: never;
     headers: never;
     pathItems: never;
@@ -1038,7 +1058,10 @@ export interface operations {
     createMaterial: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path?: never;
             cookie?: never;
         };
@@ -1073,6 +1096,7 @@ export interface operations {
             403: components["responses"]["Forbidden"];
             404: components["responses"]["NotFound"];
             422: components["responses"]["UnprocessableEntity"];
+            429: components["responses"]["TooManyRequests"];
             500: components["responses"]["InternalServerError"];
         };
     };
@@ -1407,7 +1431,10 @@ export interface operations {
     uploadFile: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 /** @description 材料实例ID */
                 material_id: string;
@@ -1473,6 +1500,7 @@ export interface operations {
                 };
             };
             422: components["responses"]["UnprocessableEntity"];
+            429: components["responses"]["TooManyRequests"];
             500: components["responses"]["InternalServerError"];
         };
     };
@@ -1605,7 +1633,10 @@ export interface operations {
     triggerQualityCheck: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 /** @description 材料实例ID */
                 material_id: string;
@@ -1647,7 +1678,7 @@ export interface operations {
             404: components["responses"]["NotFound"];
             409: components["responses"]["Conflict"];
             422: components["responses"]["UnprocessableEntity"];
-            /** @description AI 质检并发超限（最多 32 个并发请求） */
+            /** @description AI 质检并发超限（最多 32 个并发请求）。响应头含 Retry-After / X-RateLimit-* 标准限流字段。 */
             429: {
                 headers: {
                     /** @description 建议重试等待秒数 */
@@ -1734,7 +1765,10 @@ export interface operations {
     createExportTask: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
             path: {
                 /** @description 材料实例ID */
                 material_id: string;
@@ -1807,6 +1841,7 @@ export interface operations {
                 };
             };
             422: components["responses"]["UnprocessableEntity"];
+            429: components["responses"]["TooManyRequests"];
             500: components["responses"]["InternalServerError"];
         };
     };

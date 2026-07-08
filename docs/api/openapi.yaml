@@ -183,6 +183,8 @@ paths:
       operationId: createMaterial
       summary: "创建材料填写实例"
       description: "用户选择模板后创建一份新的材料填写实例。实例创建时锁定当前模板的 schema_version，后续模板修改不影响已生成实例。"
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -211,6 +213,7 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
         '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
         '500': { $ref: '#/components/responses/InternalServerError' }
 
   /api/v1/materials/{material_id}:
@@ -538,6 +541,7 @@ paths:
           required: true
           description: "步骤ID"
           schema: { type: string }
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -587,6 +591,7 @@ paths:
                         description: "当前已上传数量"
                         example: 5
         '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
         '500': { $ref: '#/components/responses/InternalServerError' }
 
   /api/v1/materials/{material_id}/steps/{step_id}/files/{file_id}:
@@ -702,6 +707,7 @@ paths:
           required: true
           description: "步骤ID"
           schema: { type: string }
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: false
         content:
@@ -732,7 +738,7 @@ paths:
         '409': { $ref: '#/components/responses/Conflict' }
         '422': { $ref: '#/components/responses/UnprocessableEntity' }
         '429':
-          description: "AI 质检并发超限（最多 32 个并发请求）"
+          description: "AI 质检并发超限（最多 32 个并发请求）。响应头含 Retry-After / X-RateLimit-* 标准限流字段。"
           headers:
             Retry-After:
               description: "建议重试等待秒数"
@@ -867,6 +873,7 @@ paths:
           required: true
           description: "材料实例ID"
           schema: { type: string }
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -927,6 +934,7 @@ paths:
                               enum: [form_incomplete, image_insufficient, quality_failed]
                               example: "image_insufficient"
         '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
         '500': { $ref: '#/components/responses/InternalServerError' }
 
   /api/v1/export-tasks/{task_id}:
@@ -1010,7 +1018,45 @@ components:
       bearerFormat: JWT
       description: "Authorization: Bearer <session_token>，session_token 通过 POST /api/v1/auth/wx-login 获取"
 
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: "幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。"
+      schema:
+        type: string
+        pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+        example: "a3f4b8c2-1d5e-4f7a-9b6c-8e2d1f9a0b3c"
+
   responses:
+    TooManyRequests:
+      description: "请求过于频繁或触发限流"
+      headers:
+        Retry-After:
+          description: "建议重试等待秒数"
+          schema:
+            type: integer
+            example: 30
+        X-RateLimit-Limit:
+          description: "当前接口的限流配额（每分钟最大请求数）"
+          schema:
+            type: integer
+            example: 60
+        X-RateLimit-Remaining:
+          description: "当前窗口剩余可用请求数"
+          schema:
+            type: integer
+            example: 0
+        X-RateLimit-Reset:
+          description: "限流窗口重置时间（Unix 时间戳，秒）"
+          schema:
+            type: integer
+            example: 1720466400
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     Unauthorized:
       description: "未授权或 token 失效"
       content:

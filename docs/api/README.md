@@ -105,12 +105,85 @@ HTTP 状态码仅表传输层状态（如 401 未授权、404 资源不存在、
 | `POST /files` 上传 | 忽略实际文件内容，返回固定 mock URL |
 | `Authorization` Header 缺失 | 返回 401 + code=10001 |
 | 超过 32 并发调用 `/quality-check` | 返回 429 + `Retry-After: 30` + code=40002 |
+| `POST` 接口携带相同 `Idempotency-Key` | 返回首次响应结果，不重复执行业务逻辑 |
+| 超过限流配额（见下方限流策略） | 返回 429 + `Retry-After` + `X-RateLimit-*` Header + code=90001 |
 
 ## 数据隔离
 
 - 所有业务接口通过 OpenID 隔离，不同用户的材料实例互不可见
 - 后端从 session_token 解析 OpenID，跨用户访问返回 403
 - Mock 服务器可对不同 token 返回不同数据集，便于联调验证
+
+## 限流策略
+
+### 限流维度
+
+按 `OpenID + 接口` 双维度限流，防止单用户滥用：
+
+| 接口类别 | 配额（建议值，后端可调） | 超限响应 |
+|---------|------------------------|---------|
+| `POST /auth/wx-login` | 10 次/分钟 | 429 + code=90001 |
+| `POST /materials`（创建实例） | 10 次/分钟 | 429 + code=90001 |
+| `POST /files`（上传） | 30 次/分钟 | 429 + code=90001 |
+| `POST /quality-check` | 32 并发（全局） | 429 + code=40002 |
+| `POST /export` | 5 次/分钟 | 429 + code=90001 |
+| 其他 GET / PUT / DELETE | 60 次/分钟 | 429 + code=90001 |
+
+### 限流响应头
+
+所有限流响应（429）必须携带以下标准 Header，便于前端实现重试退避：
+
+| Header | 说明 | 示例 |
+|--------|------|------|
+| `Retry-After` | 建议重试等待秒数 | `30` |
+| `X-RateLimit-Limit` | 当前接口配额（每分钟最大请求数） | `60` |
+| `X-RateLimit-Remaining` | 当前窗口剩余可用请求数 | `0` |
+| `X-RateLimit-Reset` | 限流窗口重置时间（Unix 时间戳，秒） | `1720466400` |
+
+### 前端重试策略
+
+- 收到 429 后必须等待 `Retry-After` 秒数再重试，**禁止立即重试**
+- 建议采用指数退避（1s → 2s → 4s → 8s），最大重试 3 次
+- 超过最大重试次数后向用户展示"网络繁忙，请稍后再试"提示
+
+## 幂等性
+
+### 适用接口
+
+仅 **POST 创建类**接口需要幂等性保护，防止网络重试导致重复创建：
+
+| 接口 | 是否需要 | 原因 |
+|------|---------|------|
+| `POST /auth/wx-login` | ❌ 不需要 | 同一 code 5 分钟内天然返回相同 token |
+| `POST /materials` | ✅ 需要 | 防止重复点击创建多份材料实例 |
+| `POST /materials/{id}/steps/{step_id}/goto` | ❌ 不需要 | 跳转是幂等操作 |
+| `POST /materials/{id}/steps/{step_id}/validate` | ❌ 不需要 | 校验是幂等操作 |
+| `POST /materials/{id}/steps/{step_id}/files` | ✅ 需要 | 防止重传生成重复文件 |
+| `POST /materials/{id}/steps/{step_id}/quality-check` | ✅ 需要 | 防止重复触发质检任务 |
+| `POST /materials/{id}/export` | ✅ 需要 | 防止重复创建导出任务 |
+
+### Idempotency-Key 使用约定
+
+- **客户端**：每次发起上述 POST 请求时，生成 UUID v4 放入 `Idempotency-Key` Header
+- **服务端**：以 `(OpenID, Idempotency-Key)` 为键记录首次响应结果，24 小时内相同键的请求直接返回首次结果（不重复执行业务逻辑）
+- **键格式**：UUID v4，正则校验 `^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`
+- **键失效**：24 小时后自动失效，可重新使用
+- **Mock 行为**：Mock 服务器记录最近 100 个 Idempotency-Key，相同键返回首次结果
+
+### 示例
+
+```http
+POST /api/v1/materials HTTP/1.1
+Authorization: Bearer eyJhbGciOi...
+Idempotency-Key: a3f4b8c2-1d5e-4f7a-9b6c-8e2d1f9a0b3c
+Content-Type: application/json
+
+{
+  "template_id": "tpl_pesticide_001"
+}
+```
+
+网络重试时携带**相同的** Idempotency-Key，后端返回首次创建的 material_id，不会创建新实例。
 
 ## 负责人
 
