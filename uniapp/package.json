@@ -1,0 +1,10 @@
+{
+  "name": "declaro-uniapp",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Declaro UniApp 移动端",
+  "scripts": {
+    "dev:app": "pnpm --filter @declaro/uniapp-app dev",
+    "build:app": "pnpm --filter @declaro/uniapp-app build"
+  }
+}

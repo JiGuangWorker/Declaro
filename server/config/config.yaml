@@ -1,0 +1,15 @@
+# Server configuration
+server:
+  port: 8080
+  mode: debug
+
+# Database configuration
+database:
+  driver: mysql
+  dsn: root:password@tcp(127.0.0.1:3306)/declaro?charset=utf8mb4&parseTime=True
+
+# Redis configuration
+redis:
+  addr: 127.0.0.1:6379
+  password: ""
+  db: 0

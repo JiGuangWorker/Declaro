@@ -1,0 +1,9 @@
+{
+  "name": "@declaro/uniapp-app",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Declaro UniApp 主应用",
+  "dependencies": {
+    "@declaro/uniapp-shared": "workspace:*"
+  }
+}

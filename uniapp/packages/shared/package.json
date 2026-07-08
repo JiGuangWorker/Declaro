@@ -1,0 +1,6 @@
+{
+  "name": "@declaro/uniapp-shared",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Declaro UniApp 共享组件、hooks、类型、工具"
+}
