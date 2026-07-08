@@ -1,0 +1,1198 @@
+openapi: 3.0.3
+info:
+  title: "材料制作平台 API"
+  description: "来源：材料制作平台 PRD v1.1 | 生成日期：2026-07-08"
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:8080
+    description: "本地开发 Mock 服务"
+
+tags:
+  - name: 模板管理
+    description: 材料模板相关接口
+  - name: 材料实例
+    description: 用户创建的材料填写实例
+  - name: 步骤进度
+    description: 步骤导航与进度管理
+  - name: 表单填报
+    description: 表单字段填写与校验
+  - name: 文件上传
+    description: 材料图片/文件上传管理
+  - name: AI质检
+    description: AI拍照质量检测
+  - name: 导出管理
+    description: PDF导出与任务管理
+
+paths:
+  # ===== 模板管理 =====
+  /api/v1/templates:
+    get:
+      tags: [模板管理]
+      summary: "获取可用材料模板列表"
+      description: "获取当前启用的所有材料模板"
+      responses:
+        '200':
+          description: "成功返回模板列表"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Template'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  /api/v1/templates/{template_id}:
+    get:
+      tags: [模板管理]
+      summary: "获取模板详情"
+      description: "获取单个材料模板的基本信息"
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          description: "模板ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "成功返回模板详情"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    $ref: '#/components/schemas/Template'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  /api/v1/templates/{template_id}/schema:
+    get:
+      tags: [模板管理]
+      summary: "获取模板Form Schema"
+      description: "关联GWT：表单填报、步骤引导 - 获取渲染表单所需的完整Schema定义"
+      parameters:
+        - name: template_id
+          in: path
+          required: true
+          description: "模板ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "成功返回Form Schema"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    $ref: '#/components/schemas/FormSchema'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  # ===== 材料实例 =====
+  /api/v1/materials:
+    post:
+      tags: [材料实例]
+      summary: "创建材料填写实例"
+      description: "用户选择模板后创建一份新的材料填写实例"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [template_id]
+              properties:
+                template_id:
+                  type: string
+                  description: "模板ID"
+                  example: "tpl_pesticide_001"
+      responses:
+        '200':
+          description: "创建成功，返回材料实例"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "创建成功" }
+                  data:
+                    $ref: '#/components/schemas/MaterialInstance'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  /api/v1/materials/{material_id}:
+    get:
+      tags: [材料实例]
+      summary: "获取材料实例详情"
+      description: "获取材料实例的基本信息和整体状态"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "成功返回材料实例"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    $ref: '#/components/schemas/MaterialInstance'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  # ===== 步骤进度 =====
+  /api/v1/materials/{material_id}/progress:
+    get:
+      tags: [步骤进度]
+      summary: "获取步骤进度"
+      description: "关联GWT：5.1步骤引导 - 正常路径 - 获取当前在哪一步、已完成几步、剩余几步"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "成功返回进度信息"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    $ref: '#/components/schemas/StepProgress'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  /api/v1/materials/{material_id}/steps/{step_id}/goto:
+    post:
+      tags: [步骤进度]
+      summary: "跳转到指定步骤"
+      description: "关联GWT：5.1步骤引导 - 异常场景A跳转控制 - 根据模板配置（顺序推进/自由跳转）决定是否允许跳转"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "目标步骤ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "跳转成功，返回目标步骤数据"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "跳转成功" }
+                  data:
+                    $ref: '#/components/schemas/StepDetail'
+        '403':
+          description: "顺序推进模式下，前置步骤未完成"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 20001 }
+                  msg: { type: string, example: "请先完成当前步骤" }
+                  data: { type: object, nullable: true, example: null }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  # ===== 表单填报 =====
+  /api/v1/materials/{material_id}/steps/{step_id}/form:
+    get:
+      tags: [表单填报]
+      summary: "获取步骤表单数据"
+      description: "关联GWT：5.2表单填报 - 异常场景C回退修改 - 自动加载之前已填内容"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "步骤ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "成功返回表单数据"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    $ref: '#/components/schemas/FormData'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+    put:
+      tags: [表单填报]
+      summary: "保存表单数据"
+      description: "关联GWT：5.2表单填报 - 正常路径 - 自动保存已填内容"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "步骤ID"
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fields]
+              properties:
+                fields:
+                  type: object
+                  description: "字段键值对，key为字段名，value为字段值"
+                  additionalProperties: true
+                  example:
+                    name: "张三"
+                    phone: "13800138000"
+                    address: "北京市朝阳区xx路xx号"
+                auto_save:
+                  type: boolean
+                  description: "是否自动保存（失焦触发）"
+                  example: true
+      responses:
+        '200':
+          description: "保存成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "保存成功" }
+                  data:
+                    type: object
+                    properties:
+                      saved_at:
+                        type: string
+                        format: date-time
+                        description: "保存时间"
+                        example: "2026-07-08T15:30:00Z"
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  /api/v1/materials/{material_id}/steps/{step_id}/validate:
+    post:
+      tags: [表单填报]
+      summary: "校验表单字段"
+      description: "关联GWT：5.2表单填报 - 异常场景A格式校验即时反馈 - 失焦时实时校验"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "步骤ID"
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [field_name, field_value]
+              properties:
+                field_name:
+                  type: string
+                  description: "字段名"
+                  example: "phone"
+                field_value:
+                  type: string
+                  description: "字段值"
+                  example: "1380013800"
+      responses:
+        '200':
+          description: "校验结果"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "校验通过" }
+                  data:
+                    type: object
+                    properties:
+                      valid:
+                        type: boolean
+                        description: "是否通过校验"
+                        example: false
+                      error_message:
+                        type: string
+                        description: "错误提示，valid为false时返回"
+                        example: "请输入正确的手机号"
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  # ===== 文件上传 =====
+  /api/v1/materials/{material_id}/steps/{step_id}/files:
+    get:
+      tags: [文件上传]
+      summary: "获取步骤已上传文件列表"
+      description: "关联GWT：5.3多材料项目上传 - 异常场景C跨项目切换 - 切换回来时显示已上传的文件"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "步骤ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "成功返回文件列表"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    type: object
+                    properties:
+                      files:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UploadedFile'
+                      count:
+                        type: integer
+                        description: "当前已上传数量"
+                        example: 2
+                      min_count:
+                        type: integer
+                        description: "最少要求数量（0表示不限制）"
+                        example: 3
+                      max_count:
+                        type: integer
+                        description: "最多允许数量（0表示不限制）"
+                        example: 5
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+    post:
+      tags: [文件上传]
+      summary: "上传文件"
+      description: "关联GWT：5.3多材料项目上传 - 正常路径 - 拍照或相册选择后上传"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "步骤ID"
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "上传的图片/文件"
+      responses:
+        '200':
+          description: "上传成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "上传成功" }
+                  data:
+                    $ref: '#/components/schemas/UploadedFile'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: "已达到最大上传数量"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 30001 }
+                  msg: { type: string, example: "最多上传5张" }
+                  data: { type: object, nullable: true, example: null }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  /api/v1/materials/{material_id}/steps/{step_id}/files/{file_id}:
+    delete:
+      tags: [文件上传]
+      summary: "删除文件"
+      description: "关联GWT：5.3多材料项目上传 - 异常场景B删除与补位 - 删除后后续文件自动补位"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "步骤ID"
+          schema: { type: string }
+        - name: file_id
+          in: path
+          required: true
+          description: "文件ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "删除成功"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "删除成功" }
+                  data:
+                    type: object
+                    properties:
+                      remaining_count:
+                        type: integer
+                        description: "删除后剩余数量"
+                        example: 2
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  # ===== AI质检 =====
+  /api/v1/materials/{material_id}/steps/{step_id}/quality-check:
+    post:
+      tags: [AI质检]
+      summary: "触发AI质检"
+      description: "关联GWT：5.4 AI拍照质检 - 正常路径/异常场景B替换后重新检测 - 自动或手动触发批量检测"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "步骤ID"
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                trigger_type:
+                  type: string
+                  description: "触发方式"
+                  enum: [auto, manual]
+                  example: "manual"
+      responses:
+        '200':
+          description: "质检任务已提交/完成"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "质检完成" }
+                  data:
+                    $ref: '#/components/schemas/QualityCheckResult'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500':
+          description: "网络超时/服务异常"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 40001 }
+                  msg: { type: string, example: "检测失败，请检查网络后重试" }
+                  data: { type: object, nullable: true, example: null }
+    get:
+      tags: [AI质检]
+      summary: "获取AI质检结果"
+      description: "获取最近一次质检的结果"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+        - name: step_id
+          in: path
+          required: true
+          description: "步骤ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "成功返回质检结果"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    $ref: '#/components/schemas/QualityCheckResult'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404':
+          description: "未配置质检规则/未进行过质检"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "该项目无需质检" }
+                  data:
+                    type: object
+                    properties:
+                      skipped: { type: boolean, example: true }
+                      passed: { type: boolean, example: true }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  # ===== 导出管理 =====
+  /api/v1/materials/{material_id}/export:
+    post:
+      tags: [导出管理]
+      summary: "创建导出任务"
+      description: "关联GWT：5.5灵活组合导出 - 正常路径/异常场景A未完成项目拦截/异常场景C大文件生成 - 创建PDF导出任务"
+      parameters:
+        - name: material_id
+          in: path
+          required: true
+          description: "材料实例ID"
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                step_ids:
+                  type: array
+                  description: "要导出的步骤ID列表，空数组表示全部导出"
+                  items: { type: string }
+                  example: []
+                export_type:
+                  type: string
+                  description: "导出类型：single-单选/multi-多选/all-全部"
+                  enum: [single, multi, all]
+                  example: "all"
+      responses:
+        '200':
+          description: "导出任务已创建"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "导出任务已创建" }
+                  data:
+                    $ref: '#/components/schemas/ExportTask'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: "存在未完成的项目"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 50001 }
+                  msg: { type: string, example: "以下项目尚未完成，无法导出：营业场所照片、安全管理制度" }
+                  data:
+                    type: object
+                    properties:
+                      incomplete_steps:
+                        type: array
+                        items: { type: string }
+                        example: ["step_photo", "step_system"]
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  /api/v1/export-tasks/{task_id}:
+    get:
+      tags: [导出管理]
+      summary: "获取导出任务状态"
+      description: "关联GWT：5.5灵活组合导出 - 异常场景C大文件生成耗时 - 查询异步生成进度"
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          description: "导出任务ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "成功返回任务状态"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 0 }
+                  msg: { type: string, example: "success" }
+                  data:
+                    $ref: '#/components/schemas/ExportTask'
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+  /api/v1/export-tasks/{task_id}/download:
+    get:
+      tags: [导出管理]
+      summary: "下载导出文件"
+      description: "下载生成完成的PDF文件，重复导出自动追加版本号"
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          description: "导出任务ID"
+          schema: { type: string }
+      responses:
+        '200':
+          description: "PDF文件流"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: "文件尚未生成完成"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: integer, example: 50002 }
+                  msg: { type: string, example: "文件正在生成中，请稍后再试" }
+                  data: { type: object, nullable: true, example: null }
+        '422': { $ref: '#/components/responses/UnprocessableEntity' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+
+components:
+  responses:
+    Forbidden:
+      description: "无操作权限"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: "资源不存在"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: "资源状态冲突"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnprocessableEntity:
+      description: "参数校验失败"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: "服务内部异常"
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: "业务错误码"
+          example: 500
+        msg:
+          type: string
+          description: "错误提示文案"
+          example: "服务异常，请稍后再试"
+        data:
+          type: object
+          nullable: true
+
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "模板ID"
+          example: "tpl_pesticide_001"
+        name:
+          type: string
+          description: "模板名称"
+          example: "农药经营许可"
+        business_type:
+          type: string
+          description: "业务类型"
+          example: "pesticide_license"
+        status:
+          type: string
+          description: "启用状态"
+          enum: [enabled, disabled]
+          example: "enabled"
+        step_count:
+          type: integer
+          description: "步骤总数"
+          example: 8
+        navigation_mode:
+          type: string
+          description: "导航模式：sequential-顺序推进/free-自由跳转"
+          enum: [sequential, free]
+          example: "free"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-07-01T10:00:00Z"
+
+    FormSchema:
+      type: object
+      properties:
+        template_id: { type: string, example: "tpl_pesticide_001" }
+        version: { type: string, example: "1.0.0" }
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepSchema'
+
+    StepSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "步骤ID"
+          example: "step_basic_info"
+        name:
+          type: string
+          description: "步骤名称"
+          example: "基本信息"
+        type:
+          type: string
+          description: "步骤类型：form-表单/upload-文件上传/both-两者都有"
+          enum: [form, upload, both]
+          example: "form"
+        tips:
+          type: string
+          description: "步骤注意事项"
+          example: "请填写真实有效的个人信息"
+        example_image_url:
+          type: string
+          description: "参考示例图片URL"
+          example: "https://example.com/examples/basic_info.jpg"
+        fields:
+          type: array
+          description: "表单字段列表（type为form或both时有值）"
+          items:
+            $ref: '#/components/schemas/FieldSchema'
+        upload_config:
+          $ref: '#/components/schemas/UploadConfig'
+
+    FieldSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "字段名"
+          example: "phone"
+        label:
+          type: string
+          description: "字段标签"
+          example: "联系电话"
+        type:
+          type: string
+          description: "字段类型"
+          enum: [text, textarea, number, phone, id_card, date, select]
+          example: "phone"
+        required:
+          type: boolean
+          description: "是否必填"
+          example: true
+        placeholder:
+          type: string
+          description: "占位提示"
+          example: "请输入11位手机号"
+        tips:
+          type: string
+          description: "字段注意事项"
+          example: "请填写能正常联系到您的手机号"
+        validation:
+          type: object
+          properties:
+            pattern:
+              type: string
+              description: "正则校验规则"
+              example: "^1[3-9]\\d{9}$"
+            min_length: { type: integer, example: 11 }
+            max_length: { type: integer, example: 11 }
+
+    UploadConfig:
+      type: object
+      properties:
+        min_count:
+          type: integer
+          description: "最少上传数量"
+          example: 3
+        max_count:
+          type: integer
+          description: "最多上传数量"
+          example: 5
+        accepted_types:
+          type: array
+          description: "接受的文件类型"
+          items: { type: string }
+          example: ["image/jpeg", "image/png"]
+        max_size_mb:
+          type: integer
+          description: "单文件最大大小(MB)"
+          example: 10
+        quality_check_rules:
+          type: array
+          description: "质检规则列表"
+          items:
+            type: object
+            properties:
+              id: { type: string, example: "rule_clear" }
+              name: { type: string, example: "文字清晰可辨" }
+              description: { type: string, example: "图片中所有文字必须清晰可读" }
+        auto_check:
+          type: boolean
+          description: "上传后是否自动触发质检"
+          example: true
+
+    MaterialInstance:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "材料实例ID"
+          example: "mat_20260708_abc123"
+        template_id:
+          type: string
+          description: "关联模板ID"
+          example: "tpl_pesticide_001"
+        template_name:
+          type: string
+          description: "模板名称"
+          example: "农药经营许可"
+        status:
+          type: string
+          description: "整体状态"
+          enum: [in_progress, completed, exported]
+          example: "in_progress"
+        current_step_id:
+          type: string
+          description: "当前所在步骤ID"
+          example: "step_basic_info"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-07-08T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-07-08T15:30:00Z"
+
+    StepProgress:
+      type: object
+      properties:
+        current_step_id:
+          type: string
+          description: "当前步骤ID"
+          example: "step_basic_info"
+        current_step_index:
+          type: integer
+          description: "当前步骤序号（从0开始）"
+          example: 0
+        total_steps:
+          type: integer
+          description: "总步骤数"
+          example: 8
+        completed_steps:
+          type: integer
+          description: "已完成步骤数"
+          example: 1
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string, example: "step_basic_info" }
+              name: { type: string, example: "基本信息" }
+              index: { type: integer, example: 0 }
+              status:
+                type: string
+                enum: [completed, current, pending, locked]
+                example: "current"
+              type:
+                type: string
+                enum: [form, upload, both]
+                example: "form"
+
+    StepDetail:
+      type: object
+      properties:
+        id: { type: string, example: "step_basic_info" }
+        name: { type: string, example: "基本信息" }
+        type: { type: string, enum: [form, upload, both], example: "form" }
+        tips: { type: string, example: "请填写真实有效的个人信息" }
+        example_image_url: { type: string, example: "https://example.com/examples/basic_info.jpg" }
+        form_data:
+          type: object
+          description: "已保存的表单数据"
+          additionalProperties: true
+          example:
+            name: "张三"
+            phone: ""
+        files:
+          type: array
+          description: "已上传文件列表"
+          items:
+            $ref: '#/components/schemas/UploadedFile'
+
+    FormData:
+      type: object
+      properties:
+        step_id: { type: string, example: "step_basic_info" }
+        fields:
+          type: object
+          description: "字段键值对"
+          additionalProperties: true
+          example:
+            name: "张三"
+            phone: "13800138000"
+        validation_errors:
+          type: array
+          description: "校验错误列表"
+          items:
+            type: object
+            properties:
+              field_name: { type: string, example: "phone" }
+              message: { type: string, example: "请输入正确的手机号" }
+        saved_at:
+          type: string
+          format: date-time
+          example: "2026-07-08T15:30:00Z"
+
+    UploadedFile:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "文件ID"
+          example: "file_abc123"
+        name:
+          type: string
+          description: "文件名"
+          example: "IMG_20260708_1.jpg"
+        url:
+          type: string
+          description: "预览URL"
+          example: "https://example.com/files/abc123.jpg"
+        thumbnail_url:
+          type: string
+          description: "缩略图URL"
+          example: "https://example.com/files/abc123_thumb.jpg"
+        size:
+          type: integer
+          description: "文件大小(字节)"
+          example: 1024000
+        uploaded_at:
+          type: string
+          format: date-time
+          example: "2026-07-08T15:20:00Z"
+        quality_check:
+          $ref: '#/components/schemas/QualityCheckResult'
+
+    QualityCheckResult:
+      type: object
+      properties:
+        status:
+          type: string
+          description: "质检状态"
+          enum: [pending, checking, passed, failed, skipped]
+          example: "failed"
+        checked_at:
+          type: string
+          format: date-time
+          example: "2026-07-08T15:25:00Z"
+        items:
+          type: array
+          description: "各检测项结果"
+          items:
+            type: object
+            properties:
+              rule_id: { type: string, example: "rule_clear" }
+              rule_name: { type: string, example: "文字清晰可辨" }
+              passed: { type: boolean, example: false }
+              reason:
+                type: string
+                description: "不通过原因，passed为false时有值"
+                example: "部分文字模糊，建议重新拍摄"
+        total_passed:
+          type: integer
+          description: "通过项数量"
+          example: 2
+        total_failed:
+          type: integer
+          description: "不通过项数量"
+          example: 1
+
+    ExportTask:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "任务ID"
+          example: "export_abc123"
+        material_id:
+          type: string
+          description: "材料实例ID"
+          example: "mat_20260708_abc123"
+        status:
+          type: string
+          description: "任务状态"
+          enum: [pending, processing, completed, failed]
+          example: "processing"
+        progress:
+          type: integer
+          description: "进度百分比 0-100"
+          minimum: 0
+          maximum: 100
+          example: 50
+        file_name:
+          type: string
+          description: "导出文件名"
+          example: "农药经营许可材料_v2.pdf"
+        file_size:
+          type: integer
+          description: "文件大小(字节)，完成后有值"
+          example: 5120000
+        download_url:
+          type: string
+          description: "下载URL，完成后有值"
+          example: "https://example.com/exports/abc123.pdf"
+        version:
+          type: integer
+          description: "导出版本号"
+          example: 2
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-07-08T16:00:00Z"
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2026-07-08T16:01:30Z"
