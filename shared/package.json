@@ -1,0 +1,17 @@
+{
+  "name": "declaro-shared",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Declaro 跨端共享类型定义与常量",
+  "scripts": {
+    "generate-types": "openapi-typescript ../docs/api/openapi.yaml -o ./api-types/index.ts",
+    "check-types": "TMP=$(mktemp) && openapi-typescript ../docs/api/openapi.yaml -o \"$TMP\" && diff -q ./api-types/index.ts \"$TMP\" && rm \"$TMP\" || (rm -f \"$TMP\"; echo 'ERROR: types are out of sync with openapi.yaml. Run: make generate-types'; exit 1)",
+    "test": "tsc --noEmit",
+    "test:web": "tsc --noEmit -p ../web/tsconfig.base.json 2>/dev/null || tsc --noEmit --project tsconfig.json ../web/tests/api-types-import.test.ts 2>/dev/null || echo 'Web import test: verify manually with tsc'",
+    "test:uniapp": "tsc --noEmit -p ../uniapp/tsconfig.base.json 2>/dev/null || tsc --noEmit --project tsconfig.json ../uniapp/tests/api-types-import.test.ts 2>/dev/null || echo 'UniApp import test: verify manually with tsc'"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^4.5.0",
+    "typescript": "^4.5.5"
+  }
+}

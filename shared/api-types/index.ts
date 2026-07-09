@@ -4,1923 +4,1430 @@
  */
 
 export interface paths {
-    "/api/v1/auth/wx-login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 微信小程序登录
-         * @description 前端 wx.login() 获取 code 后调用，后端用 code 换取 OpenID 并签发 session_token。后续所有业务接口需通过 Authorization: Bearer <session_token> 携带。
-         */
-        post: operations["wxLogin"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/templates": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取可用材料模板列表
-         * @description 获取当前启用的所有材料模板
-         */
-        get: operations["listTemplates"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/templates/{template_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取模板详情
-         * @description 获取单个材料模板的基本信息
-         */
-        get: operations["getTemplate"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/templates/{template_id}/schema": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取模板Form Schema
-         * @description 关联GWT：表单填报、步骤引导 - 获取渲染表单所需的完整Schema定义
-         */
-        get: operations["getTemplateSchema"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 创建材料填写实例
-         * @description 用户选择模板后创建一份新的材料填写实例。实例创建时锁定当前模板的 schema_version，后续模板修改不影响已生成实例。
-         */
-        post: operations["createMaterial"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取材料实例详情
-         * @description 获取材料实例的基本信息和整体状态。后端按 OpenID 校验归属，跨用户访问返回 403。
-         */
-        get: operations["getMaterial"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}/progress": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取步骤进度
-         * @description 关联GWT：5.1步骤引导 - 正常路径 - 获取当前在哪一步、已完成几步、剩余几步
-         */
-        get: operations["getStepProgress"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}/steps/{step_id}/goto": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 跳转到指定步骤
-         * @description 关联GWT：5.1步骤引导 - 异常场景A跳转控制 - 根据模板配置（顺序推进/自由跳转）决定是否允许跳转
-         */
-        post: operations["gotoStep"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}/steps/{step_id}/form": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取步骤表单数据
-         * @description 关联GWT：5.2表单填报 - 异常场景C回退修改 - 自动加载之前已填内容
-         */
-        get: operations["getFormData"];
-        /**
-         * 保存表单数据
-         * @description 关联GWT：5.2表单填报 - 正常路径 - 自动保存已填内容。前端优先本地缓存，联网后逐字段 PUT，无批量同步接口。
-         */
-        put: operations["saveFormData"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}/steps/{step_id}/validate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 校验表单字段
-         * @description 关联GWT：5.2表单填报 - 异常场景A格式校验即时反馈 - 失焦时实时校验
-         */
-        post: operations["validateField"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}/steps/{step_id}/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取步骤已上传文件列表
-         * @description 关联GWT：5.3多材料项目上传 - 异常场景C跨项目切换 - 切换回来时显示已上传的文件
-         */
-        get: operations["listFiles"];
-        put?: never;
-        /**
-         * 上传文件
-         * @description 关联GWT：5.3多材料项目上传 - 正常路径 - 拍照或相册选择后上传
-         */
-        post: operations["uploadFile"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}/steps/{step_id}/files/{file_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * 替换文件（触发重新质检）
-         * @description 关联GWT：5.4 AI拍照质检 - 异常场景B替换后重新检测 - 替换某张图片后自动重新检测全部图片。原子操作：避免 DELETE+POST 中间态导致质检结果不一致。
-         */
-        put: operations["replaceFile"];
-        post?: never;
-        /**
-         * 删除文件
-         * @description 关联GWT：5.3多材料项目上传 - 异常场景B删除与补位 - 删除后后续文件自动补位
-         */
-        delete: operations["deleteFile"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}/steps/{step_id}/quality-check": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取AI质检结果
-         * @description 获取最近一次质检的结果。若该项目未配置质检规则，返回 200 + skipped:true（PRD 5.4 异常场景C：跳过质检直接标记完成）
-         */
-        get: operations["getQualityCheckResult"];
-        put?: never;
-        /**
-         * 触发AI质检
-         * @description 关联GWT：5.4 AI拍照质检 - 正常路径/异常场景B替换后重新检测 - 自动或手动触发批量检测。响应时间预期：单人单次质检平均 30 秒；超过 32 并发返回 429。
-         */
-        post: operations["triggerQualityCheck"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/export-tasks": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取任务中心导出任务列表
-         * @description 关联GWT：5.5灵活组合导出 - 异常场景C大文件生成耗时 - 任务中心查看所有导出任务的状态与下载入口。按当前 OpenID 隔离返回。
-         */
-        get: operations["listExportTasks"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/materials/{material_id}/export": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * 创建导出任务
-         * @description 关联GWT：5.5灵活组合导出 - 正常路径/异常场景A未完成项目拦截/异常场景C大文件生成 - 创建PDF导出任务
-         */
-        post: operations["createExportTask"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/export-tasks/{task_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 获取导出任务状态
-         * @description 关联GWT：5.5灵活组合导出 - 异常场景C大文件生成耗时 - 查询异步生成进度
-         */
-        get: operations["getExportTask"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/export-tasks/{task_id}/download": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 下载导出文件
-         * @description 下载生成完成的PDF文件，重复导出自动追加版本号（v1/v2/v3）
-         */
-        get: operations["downloadExportFile"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/api/v1/auth/wx-login": {
+    /** 前端 wx.login() 获取 code 后调用，后端用 code 换取 OpenID 并签发 session_token。后续所有业务接口需通过 Authorization: Bearer <session_token> 携带。 */
+    post: operations["wxLogin"];
+  };
+  "/api/v1/templates": {
+    /** 获取当前启用的所有材料模板 */
+    get: operations["listTemplates"];
+  };
+  "/api/v1/templates/{template_id}": {
+    /** 获取单个材料模板的基本信息 */
+    get: operations["getTemplate"];
+  };
+  "/api/v1/templates/{template_id}/schema": {
+    /** 关联GWT：表单填报、步骤引导 - 获取渲染表单所需的完整Schema定义 */
+    get: operations["getTemplateSchema"];
+  };
+  "/api/v1/materials": {
+    /** 用户选择模板后创建一份新的材料填写实例。实例创建时锁定当前模板的 schema_version，后续模板修改不影响已生成实例。 */
+    post: operations["createMaterial"];
+  };
+  "/api/v1/materials/{material_id}": {
+    /** 获取材料实例的基本信息和整体状态。后端按 OpenID 校验归属，跨用户访问返回 403。 */
+    get: operations["getMaterial"];
+  };
+  "/api/v1/materials/{material_id}/progress": {
+    /** 关联GWT：5.1步骤引导 - 正常路径 - 获取当前在哪一步、已完成几步、剩余几步 */
+    get: operations["getStepProgress"];
+  };
+  "/api/v1/materials/{material_id}/steps/{step_id}/goto": {
+    /** 关联GWT：5.1步骤引导 - 异常场景A跳转控制 - 根据模板配置（顺序推进/自由跳转）决定是否允许跳转 */
+    post: operations["gotoStep"];
+  };
+  "/api/v1/materials/{material_id}/steps/{step_id}/form": {
+    /** 关联GWT：5.2表单填报 - 异常场景C回退修改 - 自动加载之前已填内容 */
+    get: operations["getFormData"];
+    /** 关联GWT：5.2表单填报 - 正常路径 - 自动保存已填内容。前端优先本地缓存，联网后逐字段 PUT，无批量同步接口。 */
+    put: operations["saveFormData"];
+  };
+  "/api/v1/materials/{material_id}/steps/{step_id}/validate": {
+    /** 关联GWT：5.2表单填报 - 异常场景A格式校验即时反馈 - 失焦时实时校验 */
+    post: operations["validateField"];
+  };
+  "/api/v1/materials/{material_id}/steps/{step_id}/files": {
+    /** 关联GWT：5.3多材料项目上传 - 异常场景C跨项目切换 - 切换回来时显示已上传的文件 */
+    get: operations["listFiles"];
+    /** 关联GWT：5.3多材料项目上传 - 正常路径 - 拍照或相册选择后上传 */
+    post: operations["uploadFile"];
+  };
+  "/api/v1/materials/{material_id}/steps/{step_id}/files/{file_id}": {
+    /** 关联GWT：5.4 AI拍照质检 - 异常场景B替换后重新检测 - 替换某张图片后自动重新检测全部图片。原子操作：避免 DELETE+POST 中间态导致质检结果不一致。 */
+    put: operations["replaceFile"];
+    /** 关联GWT：5.3多材料项目上传 - 异常场景B删除与补位 - 删除后后续文件自动补位 */
+    delete: operations["deleteFile"];
+  };
+  "/api/v1/materials/{material_id}/steps/{step_id}/quality-check": {
+    /** 获取最近一次质检的结果。若该项目未配置质检规则，返回 200 + skipped:true（PRD 5.4 异常场景C：跳过质检直接标记完成） */
+    get: operations["getQualityCheckResult"];
+    /** 关联GWT：5.4 AI拍照质检 - 正常路径/异常场景B替换后重新检测 - 自动或手动触发批量检测。响应时间预期：单人单次质检平均 30 秒；超过 32 并发返回 429。 */
+    post: operations["triggerQualityCheck"];
+  };
+  "/api/v1/export-tasks": {
+    /** 关联GWT：5.5灵活组合导出 - 异常场景C大文件生成耗时 - 任务中心查看所有导出任务的状态与下载入口。按当前 OpenID 隔离返回。 */
+    get: operations["listExportTasks"];
+  };
+  "/api/v1/materials/{material_id}/export": {
+    /** 关联GWT：5.5灵活组合导出 - 正常路径/异常场景A未完成项目拦截/异常场景C大文件生成 - 创建PDF导出任务 */
+    post: operations["createExportTask"];
+  };
+  "/api/v1/export-tasks/{task_id}": {
+    /** 关联GWT：5.5灵活组合导出 - 异常场景C大文件生成耗时 - 查询异步生成进度 */
+    get: operations["getExportTask"];
+  };
+  "/api/v1/export-tasks/{task_id}/download": {
+    /** 下载生成完成的PDF文件，重复导出自动追加版本号（v1/v2/v3） */
+    get: operations["downloadExportFile"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
-        ErrorResponse: {
-            /**
-             * @description 业务错误码：0 成功；1xxxx 鉴权/通用；2xxxx 步骤；3xxxx 文件；4xxxx 质检；5xxxx 导出；9xxxx 系统级
-             * @example 10001
-             */
-            code: number;
-            /**
-             * @description 错误提示文案
-             * @example 未授权或 token 已过期
-             */
-            msg: string;
-            /** @description 附加数据（一般为 null） */
-            data?: Record<string, never> | null;
-        };
-        Template: {
-            /**
-             * @description 模板ID
-             * @example tpl_pesticide_001
-             */
-            id: string;
-            /**
-             * @description 模板名称
-             * @example 农药经营许可
-             */
-            name: string;
-            /**
-             * @description 业务类型
-             * @example pesticide_license
-             */
-            business_type: string;
-            /**
-             * @description 启用状态
-             * @example enabled
-             * @enum {string}
-             */
-            status: "enabled" | "disabled";
-            /**
-             * @description 步骤总数
-             * @example 8
-             */
-            step_count?: number;
-            /**
-             * @description 导航模式：sequential-顺序推进/free-自由跳转
-             * @example free
-             * @enum {string}
-             */
-            navigation_mode: "sequential" | "free";
-            /**
-             * Format: date-time
-             * @example 2026-07-01T10:00:00Z
-             */
-            created_at?: string;
-        };
-        FormSchema: {
-            /** @example tpl_pesticide_001 */
-            template_id: string;
-            /**
-             * @description Schema 版本号，遵循 semver
-             * @example 1.0.0
-             */
-            version: string;
-            steps: components["schemas"]["StepSchema"][];
-        };
-        StepSchema: {
-            /**
-             * @description 步骤ID
-             * @example step_basic_info
-             */
-            id: string;
-            /**
-             * @description 步骤名称
-             * @example 基本信息
-             */
-            name: string;
-            /**
-             * @description 步骤类型：form-表单/upload-文件上传/both-两者都有
-             * @example form
-             * @enum {string}
-             */
-            type: "form" | "upload" | "both";
-            /**
-             * @description 步骤注意事项
-             * @example 请填写真实有效的个人信息
-             */
-            tips?: string;
-            /**
-             * @description 参考示例图片URL
-             * @example https://example.com/examples/basic_info.jpg
-             */
-            example_image_url?: string;
-            /** @description 表单字段列表（type为form或both时有值） */
-            fields?: components["schemas"]["FieldSchema"][];
-            upload_config?: components["schemas"]["UploadConfig"];
-        };
-        FieldSchema: {
-            /**
-             * @description 字段名
-             * @example phone
-             */
-            name: string;
-            /**
-             * @description 字段标签
-             * @example 联系电话
-             */
-            label: string;
-            /**
-             * @description 字段类型：text-文本/textarea-长文本/number-数字/phone-手机号/id_card-身份证/date-日期/select-下拉单选/radio-单选/checkbox-多选/cascader-级联（如省市区）/image-图片字段/signature-签名/label-纯展示文字
-             * @example phone
-             * @enum {string}
-             */
-            type: "text" | "textarea" | "number" | "phone" | "id_card" | "date" | "select" | "radio" | "checkbox" | "cascader" | "image" | "signature" | "label";
-            /**
-             * @description 是否必填
-             * @example true
-             */
-            required: boolean;
-            /**
-             * @description 占位提示
-             * @example 请输入11位手机号
-             */
-            placeholder?: string;
-            /**
-             * @description 字段注意事项
-             * @example 请填写能正常联系到您的手机号
-             */
-            tips?: string;
-            validation?: {
-                /**
-                 * @description 正则校验规则
-                 * @example ^1[3-9]\d{9}$
-                 */
-                pattern?: string;
-                /** @example 11 */
-                min_length?: number;
-                /** @example 11 */
-                max_length?: number;
+  schemas: {
+    ErrorResponse: {
+      /**
+       * @description 业务错误码：0 成功；1xxxx 鉴权/通用；2xxxx 步骤；3xxxx 文件；4xxxx 质检；5xxxx 导出；9xxxx 系统级
+       * @example 10001
+       */
+      code: number;
+      /**
+       * @description 错误提示文案
+       * @example 未授权或 token 已过期
+       */
+      msg: string;
+      /** @description 附加数据（一般为 null） */
+      data?: { [key: string]: unknown } | null;
+    };
+    Template: {
+      /**
+       * @description 模板ID
+       * @example tpl_pesticide_001
+       */
+      id: string;
+      /**
+       * @description 模板名称
+       * @example 农药经营许可
+       */
+      name: string;
+      /**
+       * @description 业务类型
+       * @example pesticide_license
+       */
+      business_type: string;
+      /**
+       * @description 启用状态
+       * @example enabled
+       */
+      status: "enabled" | "disabled";
+      /**
+       * @description 步骤总数
+       * @example 8
+       */
+      step_count?: number;
+      /**
+       * @description 导航模式：sequential-顺序推进/free-自由跳转
+       * @example free
+       */
+      navigation_mode: "sequential" | "free";
+      /**
+       * Format: date-time
+       * @example 2026-07-01T10:00:00Z
+       */
+      created_at?: string;
+    };
+    FormSchema: {
+      /** @example tpl_pesticide_001 */
+      template_id: string;
+      /**
+       * @description Schema 版本号，遵循 semver
+       * @example 1.0.0
+       */
+      version: string;
+      steps: components["schemas"]["StepSchema"][];
+    };
+    StepSchema: {
+      /**
+       * @description 步骤ID
+       * @example step_basic_info
+       */
+      id: string;
+      /**
+       * @description 步骤名称
+       * @example 基本信息
+       */
+      name: string;
+      /**
+       * @description 步骤类型：form-表单/upload-文件上传/both-两者都有
+       * @example form
+       */
+      type: "form" | "upload" | "both";
+      /**
+       * @description 步骤注意事项
+       * @example 请填写真实有效的个人信息
+       */
+      tips?: string;
+      /**
+       * @description 参考示例图片URL
+       * @example https://example.com/examples/basic_info.jpg
+       */
+      example_image_url?: string;
+      /** @description 表单字段列表（type为form或both时有值） */
+      fields?: components["schemas"]["FieldSchema"][];
+      upload_config?: components["schemas"]["UploadConfig"];
+    };
+    FieldSchema: {
+      /**
+       * @description 字段名
+       * @example phone
+       */
+      name: string;
+      /**
+       * @description 字段标签
+       * @example 联系电话
+       */
+      label: string;
+      /**
+       * @description 字段类型：text-文本/textarea-长文本/number-数字/phone-手机号/id_card-身份证/date-日期/select-下拉单选/radio-单选/checkbox-多选/cascader-级联（如省市区）/image-图片字段/signature-签名/label-纯展示文字
+       * @example phone
+       */
+      type:
+        | "text"
+        | "textarea"
+        | "number"
+        | "phone"
+        | "id_card"
+        | "date"
+        | "select"
+        | "radio"
+        | "checkbox"
+        | "cascader"
+        | "image"
+        | "signature"
+        | "label";
+      /**
+       * @description 是否必填
+       * @example true
+       */
+      required: boolean;
+      /**
+       * @description 占位提示
+       * @example 请输入11位手机号
+       */
+      placeholder?: string;
+      /**
+       * @description 字段注意事项
+       * @example 请填写能正常联系到您的手机号
+       */
+      tips?: string;
+      validation?: {
+        /**
+         * @description 正则校验规则
+         * @example ^1[3-9]\d{9}$
+         */
+        pattern?: string;
+        /** @example 11 */
+        min_length?: number;
+        /** @example 11 */
+        max_length?: number;
+      };
+      /** @description 选项列表（type 为 select/radio/checkbox/cascader 时有值） */
+      options?: {
+        /** @example option1 */
+        value?: string;
+        /** @example 选项一 */
+        label?: string;
+      }[];
+    };
+    UploadConfig: {
+      /**
+       * @description 最少上传数量
+       * @example 3
+       */
+      min_count: number;
+      /**
+       * @description 最多上传数量
+       * @example 5
+       */
+      max_count: number;
+      /**
+       * @description 接受的文件类型
+       * @example image/jpeg,image/png
+       */
+      accepted_types?: string[];
+      /**
+       * @description 单文件最大大小(MB)
+       * @example 10
+       */
+      max_size_mb?: number;
+      /** @description 质检规则列表（空数组表示该步骤无质检规则，跳过质检直接完成） */
+      quality_check_rules?: {
+        /** @example rule_clear */
+        id: string;
+        /** @example 文字清晰可辨 */
+        name: string;
+        /** @example 图片中所有文字必须清晰可读 */
+        description?: string;
+      }[];
+      /**
+       * @description 上传后是否自动触发质检
+       * @example true
+       */
+      auto_check: boolean;
+    };
+    MaterialInstance: {
+      /**
+       * @description 材料实例ID
+       * @example mat_20260708_abc123
+       */
+      id: string;
+      /**
+       * @description 关联模板ID
+       * @example tpl_pesticide_001
+       */
+      template_id: string;
+      /**
+       * @description 模板名称（冗余字段，便于列表展示）
+       * @example 农药经营许可
+       */
+      template_name?: string;
+      /**
+       * @description 整体状态
+       * @example in_progress
+       */
+      status: "in_progress" | "completed" | "exported";
+      /**
+       * @description 当前所在步骤ID
+       * @example step_basic_info
+       */
+      current_step_id: string;
+      /**
+       * @description 创建实例时锁定的 Form Schema 版本号，模板后续修改不影响本实例
+       * @example 1.0.0
+       */
+      schema_version: string;
+      /**
+       * Format: date-time
+       * @example 2026-07-08T10:00:00Z
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @example 2026-07-08T15:30:00Z
+       */
+      updated_at?: string;
+    };
+    StepProgress: {
+      /**
+       * @description 当前步骤ID
+       * @example step_basic_info
+       */
+      current_step_id: string;
+      /** @description 当前步骤序号（从0开始） */
+      current_step_index?: number;
+      /**
+       * @description 总步骤数
+       * @example 8
+       */
+      total_steps: number;
+      /**
+       * @description 已完成步骤数
+       * @example 1
+       */
+      completed_steps: number;
+      steps: {
+        /** @example step_basic_info */
+        id: string;
+        /** @example 基本信息 */
+        name: string;
+        index: number;
+        /** @example current */
+        status: "completed" | "current" | "pending" | "locked";
+        /** @example form */
+        type: "form" | "upload" | "both";
+      }[];
+    };
+    StepDetail: {
+      /** @example step_basic_info */
+      id: string;
+      /** @example 基本信息 */
+      name: string;
+      /** @example form */
+      type: "form" | "upload" | "both";
+      /** @example 请填写真实有效的个人信息 */
+      tips?: string;
+      /** @example https://example.com/examples/basic_info.jpg */
+      example_image_url?: string;
+      /**
+       * @description 已保存的表单数据
+       * @example [object Object]
+       */
+      form_data?: { [key: string]: unknown };
+      /** @description 已上传文件列表 */
+      files?: components["schemas"]["UploadedFile"][];
+    };
+    FormData: {
+      /** @example step_basic_info */
+      step_id: string;
+      /**
+       * @description 字段键值对
+       * @example [object Object]
+       */
+      fields: { [key: string]: unknown };
+      /** @description 校验错误列表 */
+      validation_errors?: {
+        /** @example phone */
+        field_name: string;
+        /** @example 请输入正确的手机号 */
+        message: string;
+      }[];
+      /**
+       * Format: date-time
+       * @example 2026-07-08T15:30:00Z
+       */
+      saved_at?: string;
+    };
+    UploadedFile: {
+      /**
+       * @description 文件ID
+       * @example file_abc123
+       */
+      id: string;
+      /**
+       * @description 文件名
+       * @example IMG_20260708_1.jpg
+       */
+      name: string;
+      /**
+       * @description 预览URL
+       * @example https://example.com/files/abc123.jpg
+       */
+      url: string;
+      /**
+       * @description 缩略图URL
+       * @example https://example.com/files/abc123_thumb.jpg
+       */
+      thumbnail_url?: string;
+      /**
+       * @description 文件大小(字节)
+       * @example 1024000
+       */
+      size?: number;
+      /**
+       * Format: date-time
+       * @example 2026-07-08T15:20:00Z
+       */
+      uploaded_at: string;
+      quality_check?: components["schemas"]["QualityCheckResult"];
+    };
+    QualityCheckResult: {
+      /**
+       * @description 质检状态：pending-等待中/checking-检测中/passed-全部通过/failed-有不通过/skipped-未配置质检规则跳过
+       * @example failed
+       */
+      status: "pending" | "checking" | "passed" | "failed" | "skipped";
+      /**
+       * Format: date-time
+       * @example 2026-07-08T15:25:00Z
+       */
+      checked_at?: string;
+      /** @description 各检测项结果（status 为 skipped 时为空数组） */
+      items?: {
+        /** @example rule_clear */
+        rule_id: string;
+        /** @example 文字清晰可辨 */
+        rule_name: string;
+        passed: boolean;
+        /**
+         * @description 不通过原因，passed为false时有值
+         * @example 部分文字模糊，建议重新拍摄
+         */
+        reason?: string;
+      }[];
+      /**
+       * @description 通过项数量
+       * @example 2
+       */
+      total_passed?: number;
+      /**
+       * @description 不通过项数量
+       * @example 1
+       */
+      total_failed?: number;
+    };
+    ExportTask: {
+      /**
+       * @description 任务ID
+       * @example export_abc123
+       */
+      id: string;
+      /**
+       * @description 材料实例ID
+       * @example mat_20260708_abc123
+       */
+      material_id: string;
+      /**
+       * @description 任务状态
+       * @example processing
+       */
+      status: "pending" | "processing" | "completed" | "failed";
+      /**
+       * @description 进度百分比 0-100
+       * @example 50
+       */
+      progress: number;
+      /**
+       * @description 导出文件名（含版本号后缀）
+       * @example 农药经营许可材料_v2.pdf
+       */
+      file_name?: string;
+      /**
+       * @description 文件大小(字节)，完成后有值
+       * @example 5120000
+       */
+      file_size?: number;
+      /**
+       * @description 下载URL，完成后有值
+       * @example https://example.com/exports/abc123.pdf
+       */
+      download_url?: string;
+      /**
+       * @description 导出版本号
+       * @example 2
+       */
+      version?: number;
+      /**
+       * Format: date-time
+       * @example 2026-07-08T16:00:00Z
+       */
+      created_at: string;
+      /**
+       * Format: date-time
+       * @example 2026-07-08T16:01:30Z
+       */
+      completed_at?: string | null;
+    };
+  };
+  responses: {
+    /** 请求过于频繁或触发限流 */
+    TooManyRequests: {
+      headers: {
+        /** 建议重试等待秒数 */
+        "Retry-After"?: number;
+        /** 当前接口的限流配额（每分钟最大请求数） */
+        "X-RateLimit-Limit"?: number;
+        /** 当前窗口剩余可用请求数 */
+        "X-RateLimit-Remaining"?: number;
+        /** 限流窗口重置时间（Unix 时间戳，秒） */
+        "X-RateLimit-Reset"?: number;
+      };
+      content: {
+        "application/json": components["schemas"]["ErrorResponse"];
+      };
+    };
+    /** 未授权或 token 失效 */
+    Unauthorized: {
+      content: {
+        "application/json": components["schemas"]["ErrorResponse"];
+      };
+    };
+    /** 无操作权限 */
+    Forbidden: {
+      content: {
+        "application/json": components["schemas"]["ErrorResponse"];
+      };
+    };
+    /** 资源不存在 */
+    NotFound: {
+      content: {
+        "application/json": components["schemas"]["ErrorResponse"];
+      };
+    };
+    /** 资源状态冲突 */
+    Conflict: {
+      content: {
+        "application/json": components["schemas"]["ErrorResponse"];
+      };
+    };
+    /** 参数校验失败 */
+    UnprocessableEntity: {
+      content: {
+        "application/json": components["schemas"]["ErrorResponse"];
+      };
+    };
+    /** 服务内部异常 */
+    InternalServerError: {
+      content: {
+        "application/json": components["schemas"]["ErrorResponse"];
+      };
+    };
+  };
+  parameters: {
+    /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+    IdempotencyKey: string;
+  };
+}
+
+export interface operations {
+  /** 前端 wx.login() 获取 code 后调用，后端用 code 换取 OpenID 并签发 session_token。后续所有业务接口需通过 Authorization: Bearer <session_token> 携带。 */
+  wxLogin: {
+    responses: {
+      /** 登录成功，返回 session_token */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 登录成功 */
+            msg?: string;
+            data?: {
+              /**
+               * @description 会话 token，后续请求放在 Authorization: Bearer 头
+               * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+               */
+              session_token: string;
+              /**
+               * @description token 有效期（秒）
+               * @example 7200
+               */
+              expires_in: number;
+              /**
+               * @description 微信 OpenID，仅开发/测试环境返回，生产环境不下发
+               * @example oXXXXXXXXXXXXXXXXXXXXXX
+               */
+              openid?: string;
             };
-            /** @description 选项列表（type 为 select/radio/checkbox/cascader 时有值） */
-            options?: {
-                /** @example option1 */
-                value?: string;
-                /** @example 选项一 */
-                label?: string;
-            }[];
+          };
         };
-        UploadConfig: {
-            /**
-             * @description 最少上传数量
-             * @example 3
-             */
-            min_count: number;
-            /**
-             * @description 最多上传数量
-             * @example 5
-             */
-            max_count: number;
-            /**
-             * @description 接受的文件类型
-             * @example [
-             *       "image/jpeg",
-             *       "image/png"
-             *     ]
-             */
-            accepted_types?: string[];
-            /**
-             * @description 单文件最大大小(MB)
-             * @example 10
-             */
-            max_size_mb?: number;
-            /** @description 质检规则列表（空数组表示该步骤无质检规则，跳过质检直接完成） */
-            quality_check_rules?: {
-                /** @example rule_clear */
-                id: string;
-                /** @example 文字清晰可辨 */
-                name: string;
-                /** @example 图片中所有文字必须清晰可读 */
-                description?: string;
-            }[];
-            /**
-             * @description 上传后是否自动触发质检
-             * @example true
-             */
-            auto_check: boolean;
+      };
+      /** code 无效或已过期 */
+      401: {
+        content: {
+          "application/json": {
+            /** @example 10001 */
+            code?: number;
+            /** @example code 无效或已过期 */
+            msg?: string;
+            data?: { [key: string]: unknown } | null;
+          };
         };
-        MaterialInstance: {
-            /**
-             * @description 材料实例ID
-             * @example mat_20260708_abc123
-             */
-            id: string;
-            /**
-             * @description 关联模板ID
-             * @example tpl_pesticide_001
-             */
-            template_id: string;
-            /**
-             * @description 模板名称（冗余字段，便于列表展示）
-             * @example 农药经营许可
-             */
-            template_name?: string;
-            /**
-             * @description 整体状态
-             * @example in_progress
-             * @enum {string}
-             */
-            status: "in_progress" | "completed" | "exported";
-            /**
-             * @description 当前所在步骤ID
-             * @example step_basic_info
-             */
-            current_step_id: string;
-            /**
-             * @description 创建实例时锁定的 Form Schema 版本号，模板后续修改不影响本实例
-             * @example 1.0.0
-             */
-            schema_version: string;
-            /**
-             * Format: date-time
-             * @example 2026-07-08T10:00:00Z
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @example 2026-07-08T15:30:00Z
-             */
-            updated_at?: string;
+      };
+      500: components["responses"]["InternalServerError"];
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description wx.login() 获取的临时 code（5 分钟有效）
+           * @example 0a3xxxxxxxxxxxxxxx
+           */
+          code: string;
         };
-        StepProgress: {
-            /**
-             * @description 当前步骤ID
-             * @example step_basic_info
-             */
-            current_step_id: string;
-            /**
-             * @description 当前步骤序号（从0开始）
-             * @example 0
-             */
-            current_step_index?: number;
-            /**
-             * @description 总步骤数
-             * @example 8
-             */
-            total_steps: number;
-            /**
-             * @description 已完成步骤数
-             * @example 1
-             */
-            completed_steps: number;
-            steps: {
-                /** @example step_basic_info */
-                id: string;
-                /** @example 基本信息 */
-                name: string;
-                /** @example 0 */
-                index: number;
-                /**
-                 * @example current
-                 * @enum {string}
-                 */
-                status: "completed" | "current" | "pending" | "locked";
-                /**
-                 * @example form
-                 * @enum {string}
-                 */
-                type: "form" | "upload" | "both";
-            }[];
+      };
+    };
+  };
+  /** 获取当前启用的所有材料模板 */
+  listTemplates: {
+    responses: {
+      /** 成功返回模板列表 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: components["schemas"]["Template"][];
+          };
         };
-        StepDetail: {
-            /** @example step_basic_info */
-            id: string;
-            /** @example 基本信息 */
-            name: string;
-            /**
-             * @example form
-             * @enum {string}
-             */
-            type: "form" | "upload" | "both";
-            /** @example 请填写真实有效的个人信息 */
-            tips?: string;
-            /** @example https://example.com/examples/basic_info.jpg */
-            example_image_url?: string;
-            /**
-             * @description 已保存的表单数据
-             * @example {
-             *       "name": "张三",
-             *       "phone": ""
-             *     }
-             */
-            form_data?: {
-                [key: string]: unknown;
-            };
-            /** @description 已上传文件列表 */
-            files?: components["schemas"]["UploadedFile"][];
-        };
-        FormData: {
-            /** @example step_basic_info */
-            step_id: string;
-            /**
-             * @description 字段键值对
-             * @example {
-             *       "name": "张三",
-             *       "phone": "13800138000"
-             *     }
-             */
-            fields: {
-                [key: string]: unknown;
-            };
-            /** @description 校验错误列表 */
-            validation_errors?: {
-                /** @example phone */
-                field_name: string;
-                /** @example 请输入正确的手机号 */
-                message: string;
-            }[];
-            /**
-             * Format: date-time
-             * @example 2026-07-08T15:30:00Z
-             */
-            saved_at?: string;
-        };
-        UploadedFile: {
-            /**
-             * @description 文件ID
-             * @example file_abc123
-             */
-            id: string;
-            /**
-             * @description 文件名
-             * @example IMG_20260708_1.jpg
-             */
-            name: string;
-            /**
-             * @description 预览URL
-             * @example https://example.com/files/abc123.jpg
-             */
-            url: string;
-            /**
-             * @description 缩略图URL
-             * @example https://example.com/files/abc123_thumb.jpg
-             */
-            thumbnail_url?: string;
-            /**
-             * @description 文件大小(字节)
-             * @example 1024000
-             */
-            size?: number;
-            /**
-             * Format: date-time
-             * @example 2026-07-08T15:20:00Z
-             */
-            uploaded_at: string;
-            quality_check?: components["schemas"]["QualityCheckResult"];
-        };
-        QualityCheckResult: {
-            /**
-             * @description 质检状态：pending-等待中/checking-检测中/passed-全部通过/failed-有不通过/skipped-未配置质检规则跳过
-             * @example failed
-             * @enum {string}
-             */
-            status: "pending" | "checking" | "passed" | "failed" | "skipped";
-            /**
-             * Format: date-time
-             * @example 2026-07-08T15:25:00Z
-             */
-            checked_at?: string;
-            /** @description 各检测项结果（status 为 skipped 时为空数组） */
-            items?: {
-                /** @example rule_clear */
-                rule_id: string;
-                /** @example 文字清晰可辨 */
-                rule_name: string;
-                /** @example false */
-                passed: boolean;
-                /**
-                 * @description 不通过原因，passed为false时有值
-                 * @example 部分文字模糊，建议重新拍摄
-                 */
-                reason?: string;
-            }[];
-            /**
-             * @description 通过项数量
-             * @example 2
-             */
-            total_passed?: number;
-            /**
-             * @description 不通过项数量
-             * @example 1
-             */
-            total_failed?: number;
-        };
-        ExportTask: {
-            /**
-             * @description 任务ID
-             * @example export_abc123
-             */
-            id: string;
-            /**
-             * @description 材料实例ID
-             * @example mat_20260708_abc123
-             */
-            material_id: string;
-            /**
-             * @description 任务状态
-             * @example processing
-             * @enum {string}
-             */
-            status: "pending" | "processing" | "completed" | "failed";
-            /**
-             * @description 进度百分比 0-100
-             * @example 50
-             */
-            progress: number;
-            /**
-             * @description 导出文件名（含版本号后缀）
-             * @example 农药经营许可材料_v2.pdf
-             */
-            file_name?: string;
-            /**
-             * @description 文件大小(字节)，完成后有值
-             * @example 5120000
-             */
-            file_size?: number;
-            /**
-             * @description 下载URL，完成后有值
-             * @example https://example.com/exports/abc123.pdf
-             */
-            download_url?: string;
-            /**
-             * @description 导出版本号
-             * @example 2
-             */
-            version?: number;
-            /**
-             * Format: date-time
-             * @example 2026-07-08T16:00:00Z
-             */
-            created_at: string;
-            /**
-             * Format: date-time
-             * @example 2026-07-08T16:01:30Z
-             */
-            completed_at?: string | null;
-        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 获取单个材料模板的基本信息 */
+  getTemplate: {
+    parameters: {
+      path: {
+        /** 模板ID */
+        template_id: string;
+      };
     };
     responses: {
-        /** @description 请求过于频繁或触发限流 */
-        TooManyRequests: {
-            headers: {
-                /** @description 建议重试等待秒数 */
-                "Retry-After"?: number;
-                /** @description 当前接口的限流配额（每分钟最大请求数） */
-                "X-RateLimit-Limit"?: number;
-                /** @description 当前窗口剩余可用请求数 */
-                "X-RateLimit-Remaining"?: number;
-                /** @description 限流窗口重置时间（Unix 时间戳，秒） */
-                "X-RateLimit-Reset"?: number;
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
+      /** 成功返回模板详情 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: components["schemas"]["Template"];
+          };
         };
-        /** @description 未授权或 token 失效 */
-        Unauthorized: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description 无操作权限 */
-        Forbidden: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description 资源不存在 */
-        NotFound: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description 资源状态冲突 */
-        Conflict: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description 参数校验失败 */
-        UnprocessableEntity: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description 服务内部异常 */
-        InternalServerError: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
     };
+  };
+  /** 关联GWT：表单填报、步骤引导 - 获取渲染表单所需的完整Schema定义 */
+  getTemplateSchema: {
     parameters: {
-        /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
-        IdempotencyKey: string;
+      path: {
+        /** 模板ID */
+        template_id: string;
+      };
     };
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    responses: {
+      /** 成功返回Form Schema */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: components["schemas"]["FormSchema"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 用户选择模板后创建一份新的材料填写实例。实例创建时锁定当前模板的 schema_version，后续模板修改不影响已生成实例。 */
+  createMaterial: {
+    parameters: {
+      header: {
+        /** 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+        "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+      };
+    };
+    responses: {
+      /** 创建成功，返回材料实例 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 创建成功 */
+            msg?: string;
+            data?: components["schemas"]["MaterialInstance"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      422: components["responses"]["UnprocessableEntity"];
+      429: components["responses"]["TooManyRequests"];
+      500: components["responses"]["InternalServerError"];
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description 模板ID
+           * @example tpl_pesticide_001
+           */
+          template_id: string;
+        };
+      };
+    };
+  };
+  /** 获取材料实例的基本信息和整体状态。后端按 OpenID 校验归属，跨用户访问返回 403。 */
+  getMaterial: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+      };
+    };
+    responses: {
+      /** 成功返回材料实例 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: components["schemas"]["MaterialInstance"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 关联GWT：5.1步骤引导 - 正常路径 - 获取当前在哪一步、已完成几步、剩余几步 */
+  getStepProgress: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+      };
+    };
+    responses: {
+      /** 成功返回进度信息 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: components["schemas"]["StepProgress"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 关联GWT：5.1步骤引导 - 异常场景A跳转控制 - 根据模板配置（顺序推进/自由跳转）决定是否允许跳转 */
+  gotoStep: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 目标步骤ID */
+        step_id: string;
+      };
+    };
+    responses: {
+      /** 跳转成功，返回目标步骤数据 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 跳转成功 */
+            msg?: string;
+            data?: components["schemas"]["StepDetail"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      /** 顺序推进模式下，前置步骤未完成 */
+      403: {
+        content: {
+          "application/json": {
+            /** @example 20001 */
+            code?: number;
+            /** @example 请先完成当前步骤 */
+            msg?: string;
+            data?: { [key: string]: unknown } | null;
+          };
+        };
+      };
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 关联GWT：5.2表单填报 - 异常场景C回退修改 - 自动加载之前已填内容 */
+  getFormData: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+      };
+    };
+    responses: {
+      /** 成功返回表单数据 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: components["schemas"]["FormData"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 关联GWT：5.2表单填报 - 正常路径 - 自动保存已填内容。前端优先本地缓存，联网后逐字段 PUT，无批量同步接口。 */
+  saveFormData: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+      };
+    };
+    responses: {
+      /** 保存成功 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 保存成功 */
+            msg?: string;
+            data?: {
+              /**
+               * Format: date-time
+               * @description 保存时间
+               * @example 2026-07-08T15:30:00Z
+               */
+              saved_at: string;
+            };
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      422: components["responses"]["UnprocessableEntity"];
+      500: components["responses"]["InternalServerError"];
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description 字段键值对，key为字段名，value为字段值
+           * @example [object Object]
+           */
+          fields: { [key: string]: unknown };
+          /**
+           * @description 是否自动保存（失焦触发）
+           * @example true
+           */
+          auto_save?: boolean;
+        };
+      };
+    };
+  };
+  /** 关联GWT：5.2表单填报 - 异常场景A格式校验即时反馈 - 失焦时实时校验 */
+  validateField: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+      };
+    };
+    responses: {
+      /** 校验结果 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 校验通过 */
+            msg?: string;
+            data?: {
+              /** @description 是否通过校验 */
+              valid: boolean;
+              /**
+               * @description 错误提示，valid为false时返回
+               * @example 请输入正确的手机号
+               */
+              error_message?: string;
+            };
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description 字段名
+           * @example phone
+           */
+          field_name: string;
+          /**
+           * @description 字段值
+           * @example 1380013800
+           */
+          field_value: string;
+        };
+      };
+    };
+  };
+  /** 关联GWT：5.3多材料项目上传 - 异常场景C跨项目切换 - 切换回来时显示已上传的文件 */
+  listFiles: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+      };
+    };
+    responses: {
+      /** 成功返回文件列表 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: {
+              files: components["schemas"]["UploadedFile"][];
+              /**
+               * @description 当前已上传数量
+               * @example 2
+               */
+              count: number;
+              /**
+               * @description 最少要求数量（0表示不限制）
+               * @example 3
+               */
+              min_count: number;
+              /**
+               * @description 最多允许数量（0表示不限制）
+               * @example 5
+               */
+              max_count: number;
+            };
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 关联GWT：5.3多材料项目上传 - 正常路径 - 拍照或相册选择后上传 */
+  uploadFile: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+      };
+      header: {
+        /** 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+        "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+      };
+    };
+    responses: {
+      /** 上传成功 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 上传成功 */
+            msg?: string;
+            data?: components["schemas"]["UploadedFile"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      /** 已达到最大上传数量 */
+      409: {
+        content: {
+          "application/json": {
+            /** @example 30001 */
+            code?: number;
+            /** @example 最多上传5张 */
+            msg?: string;
+            data?: {
+              /**
+               * @description 允许的最大数量
+               * @example 5
+               */
+              max_count: number;
+              /**
+               * @description 当前已上传数量
+               * @example 5
+               */
+              current_count: number;
+            };
+          };
+        };
+      };
+      422: components["responses"]["UnprocessableEntity"];
+      429: components["responses"]["TooManyRequests"];
+      500: components["responses"]["InternalServerError"];
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /**
+           * Format: binary
+           * @description 上传的图片/文件
+           */
+          file: string;
+        };
+      };
+    };
+  };
+  /** 关联GWT：5.4 AI拍照质检 - 异常场景B替换后重新检测 - 替换某张图片后自动重新检测全部图片。原子操作：避免 DELETE+POST 中间态导致质检结果不一致。 */
+  replaceFile: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+        /** 要替换的文件ID */
+        file_id: string;
+      };
+    };
+    responses: {
+      /** 替换成功（若该项目配置了质检规则，将自动触发重检） */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 替换成功，已触发重新质检 */
+            msg?: string;
+            data?: components["schemas"]["UploadedFile"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      422: components["responses"]["UnprocessableEntity"];
+      500: components["responses"]["InternalServerError"];
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": {
+          /**
+           * Format: binary
+           * @description 新上传的替换文件
+           */
+          file: string;
+        };
+      };
+    };
+  };
+  /** 关联GWT：5.3多材料项目上传 - 异常场景B删除与补位 - 删除后后续文件自动补位 */
+  deleteFile: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+        /** 文件ID */
+        file_id: string;
+      };
+    };
+    responses: {
+      /** 删除成功 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 删除成功 */
+            msg?: string;
+            data?: {
+              /**
+               * @description 删除后剩余数量
+               * @example 2
+               */
+              remaining_count: number;
+            };
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 获取最近一次质检的结果。若该项目未配置质检规则，返回 200 + skipped:true（PRD 5.4 异常场景C：跳过质检直接标记完成） */
+  getQualityCheckResult: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+      };
+    };
+    responses: {
+      /** 成功返回质检结果（含未配置质检规则的跳过分支） */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: components["schemas"]["QualityCheckResult"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 关联GWT：5.4 AI拍照质检 - 正常路径/异常场景B替换后重新检测 - 自动或手动触发批量检测。响应时间预期：单人单次质检平均 30 秒；超过 32 并发返回 429。 */
+  triggerQualityCheck: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+        /** 步骤ID */
+        step_id: string;
+      };
+      header: {
+        /** 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+        "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+      };
+    };
+    responses: {
+      /** 质检任务已提交/完成 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 质检完成 */
+            msg?: string;
+            data?: components["schemas"]["QualityCheckResult"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      409: components["responses"]["Conflict"];
+      422: components["responses"]["UnprocessableEntity"];
+      /** AI 质检并发超限（最多 32 个并发请求）。响应头含 Retry-After / X-RateLimit-* 标准限流字段。 */
+      429: {
+        headers: {
+          /** 建议重试等待秒数 */
+          "Retry-After"?: number;
+        };
+        content: {
+          "application/json": {
+            /** @example 40002 */
+            code?: number;
+            /** @example 质检服务繁忙，请稍后重试 */
+            msg?: string;
+            data?: { [key: string]: unknown } | null;
+          };
+        };
+      };
+      500: components["responses"]["InternalServerError"];
+      /** AI 服务超时 */
+      504: {
+        content: {
+          "application/json": {
+            /** @example 40001 */
+            code?: number;
+            /** @example 检测失败，请检查网络后重试 */
+            msg?: string;
+            data?: { [key: string]: unknown } | null;
+          };
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description 触发方式
+           * @example manual
+           */
+          trigger_type?: "auto" | "manual";
+        };
+      };
+    };
+  };
+  /** 关联GWT：5.5灵活组合导出 - 异常场景C大文件生成耗时 - 任务中心查看所有导出任务的状态与下载入口。按当前 OpenID 隔离返回。 */
+  listExportTasks: {
+    parameters: {
+      query: {
+        /** 按任务状态过滤 */
+        status?: "pending" | "processing" | "completed" | "failed";
+        /** 页码（从 1 开始） */
+        page?: number;
+        /** 每页数量 */
+        page_size?: number;
+      };
+    };
+    responses: {
+      /** 成功返回任务列表（分页） */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: {
+              items: components["schemas"]["ExportTask"][];
+              /**
+               * @description 总任务数
+               * @example 35
+               */
+              total: number;
+              /** @example 1 */
+              page: number;
+              /** @example 20 */
+              page_size: number;
+            };
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 关联GWT：5.5灵活组合导出 - 正常路径/异常场景A未完成项目拦截/异常场景C大文件生成 - 创建PDF导出任务 */
+  createExportTask: {
+    parameters: {
+      path: {
+        /** 材料实例ID */
+        material_id: string;
+      };
+      header: {
+        /** 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
+        "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+      };
+    };
+    responses: {
+      /** 导出任务已创建 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example 导出任务已创建 */
+            msg?: string;
+            data?: components["schemas"]["ExportTask"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      /** 存在未完成的项目 */
+      409: {
+        content: {
+          "application/json": {
+            /** @example 50001 */
+            code?: number;
+            /** @example 以下项目尚未完成，无法导出：营业场所照片、安全管理制度 */
+            msg?: string;
+            data?: {
+              /** @description 未完成项目详情列表（含 step_name，前端可直接渲染提示文案） */
+              incomplete_steps: {
+                /** @example step_photo */
+                step_id: string;
+                /** @example 营业场所照片 */
+                step_name: string;
+                /**
+                 * @description 未完成原因：form_incomplete-表单未填完/image_insufficient-图片数量不足/quality_failed-质检未通过
+                 * @example image_insufficient
+                 */
+                reason:
+                  | "form_incomplete"
+                  | "image_insufficient"
+                  | "quality_failed";
+              }[];
+            };
+          };
+        };
+      };
+      422: components["responses"]["UnprocessableEntity"];
+      429: components["responses"]["TooManyRequests"];
+      500: components["responses"]["InternalServerError"];
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description 要导出的步骤ID列表，空数组表示全部导出
+           * @example
+           */
+          step_ids?: string[];
+          /**
+           * @description 导出类型：single-单选/multi-多选/all-全部
+           * @example all
+           */
+          export_type?: "single" | "multi" | "all";
+        };
+      };
+    };
+  };
+  /** 关联GWT：5.5灵活组合导出 - 异常场景C大文件生成耗时 - 查询异步生成进度 */
+  getExportTask: {
+    parameters: {
+      path: {
+        /** 导出任务ID */
+        task_id: string;
+      };
+    };
+    responses: {
+      /** 成功返回任务状态 */
+      200: {
+        content: {
+          "application/json": {
+            code?: number;
+            /** @example success */
+            msg?: string;
+            data?: components["schemas"]["ExportTask"];
+          };
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      500: components["responses"]["InternalServerError"];
+    };
+  };
+  /** 下载生成完成的PDF文件，重复导出自动追加版本号（v1/v2/v3） */
+  downloadExportFile: {
+    parameters: {
+      path: {
+        /** 导出任务ID */
+        task_id: string;
+      };
+    };
+    responses: {
+      /** PDF文件流 */
+      200: {
+        content: {
+          "application/pdf": string;
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      /** 文件尚未生成完成 */
+      409: {
+        headers: {
+          /** 建议重试等待秒数 */
+          "Retry-After"?: number;
+        };
+        content: {
+          "application/json": {
+            /** @example 50002 */
+            code?: number;
+            /** @example 文件正在生成中，请稍后再试 */
+            msg?: string;
+            data?: { [key: string]: unknown } | null;
+          };
+        };
+      };
+      500: components["responses"]["InternalServerError"];
+    };
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    wxLogin: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description wx.login() 获取的临时 code（5 分钟有效）
-                     * @example 0a3xxxxxxxxxxxxxxx
-                     */
-                    code: string;
-                };
-            };
-        };
-        responses: {
-            /** @description 登录成功，返回 session_token */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 登录成功 */
-                        msg?: string;
-                        data?: {
-                            /**
-                             * @description 会话 token，后续请求放在 Authorization: Bearer 头
-                             * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-                             */
-                            session_token: string;
-                            /**
-                             * @description token 有效期（秒）
-                             * @example 7200
-                             */
-                            expires_in: number;
-                            /**
-                             * @description 微信 OpenID，仅开发/测试环境返回，生产环境不下发
-                             * @example oXXXXXXXXXXXXXXXXXXXXXX
-                             */
-                            openid?: string;
-                        };
-                    };
-                };
-            };
-            /** @description code 无效或已过期 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 10001 */
-                        code?: number;
-                        /** @example code 无效或已过期 */
-                        msg?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    listTemplates: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回模板列表 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: components["schemas"]["Template"][];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    getTemplate: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 模板ID */
-                template_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回模板详情 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: components["schemas"]["Template"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    getTemplateSchema: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 模板ID */
-                template_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回Form Schema */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: components["schemas"]["FormSchema"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    createMaterial: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description 模板ID
-                     * @example tpl_pesticide_001
-                     */
-                    template_id: string;
-                };
-            };
-        };
-        responses: {
-            /** @description 创建成功，返回材料实例 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 创建成功 */
-                        msg?: string;
-                        data?: components["schemas"]["MaterialInstance"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            422: components["responses"]["UnprocessableEntity"];
-            429: components["responses"]["TooManyRequests"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    getMaterial: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回材料实例 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: components["schemas"]["MaterialInstance"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    getStepProgress: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回进度信息 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: components["schemas"]["StepProgress"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    gotoStep: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 目标步骤ID */
-                step_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 跳转成功，返回目标步骤数据 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 跳转成功 */
-                        msg?: string;
-                        data?: components["schemas"]["StepDetail"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            /** @description 顺序推进模式下，前置步骤未完成 */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 20001 */
-                        code?: number;
-                        /** @example 请先完成当前步骤 */
-                        msg?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    getFormData: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回表单数据 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: components["schemas"]["FormData"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    saveFormData: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description 字段键值对，key为字段名，value为字段值
-                     * @example {
-                     *       "name": "张三",
-                     *       "phone": "13800138000",
-                     *       "address": "北京市朝阳区xx路xx号"
-                     *     }
-                     */
-                    fields: {
-                        [key: string]: unknown;
-                    };
-                    /**
-                     * @description 是否自动保存（失焦触发）
-                     * @example true
-                     */
-                    auto_save?: boolean;
-                };
-            };
-        };
-        responses: {
-            /** @description 保存成功 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 保存成功 */
-                        msg?: string;
-                        data?: {
-                            /**
-                             * Format: date-time
-                             * @description 保存时间
-                             * @example 2026-07-08T15:30:00Z
-                             */
-                            saved_at: string;
-                        };
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            422: components["responses"]["UnprocessableEntity"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    validateField: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description 字段名
-                     * @example phone
-                     */
-                    field_name: string;
-                    /**
-                     * @description 字段值
-                     * @example 1380013800
-                     */
-                    field_value: string;
-                };
-            };
-        };
-        responses: {
-            /** @description 校验结果 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 校验通过 */
-                        msg?: string;
-                        data?: {
-                            /**
-                             * @description 是否通过校验
-                             * @example false
-                             */
-                            valid: boolean;
-                            /**
-                             * @description 错误提示，valid为false时返回
-                             * @example 请输入正确的手机号
-                             */
-                            error_message?: string;
-                        };
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    listFiles: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回文件列表 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: {
-                            files: components["schemas"]["UploadedFile"][];
-                            /**
-                             * @description 当前已上传数量
-                             * @example 2
-                             */
-                            count: number;
-                            /**
-                             * @description 最少要求数量（0表示不限制）
-                             * @example 3
-                             */
-                            min_count: number;
-                            /**
-                             * @description 最多允许数量（0表示不限制）
-                             * @example 5
-                             */
-                            max_count: number;
-                        };
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    uploadFile: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * Format: binary
-                     * @description 上传的图片/文件
-                     */
-                    file: string;
-                };
-            };
-        };
-        responses: {
-            /** @description 上传成功 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 上传成功 */
-                        msg?: string;
-                        data?: components["schemas"]["UploadedFile"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            /** @description 已达到最大上传数量 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 30001 */
-                        code?: number;
-                        /** @example 最多上传5张 */
-                        msg?: string;
-                        data?: {
-                            /**
-                             * @description 允许的最大数量
-                             * @example 5
-                             */
-                            max_count: number;
-                            /**
-                             * @description 当前已上传数量
-                             * @example 5
-                             */
-                            current_count: number;
-                        };
-                    };
-                };
-            };
-            422: components["responses"]["UnprocessableEntity"];
-            429: components["responses"]["TooManyRequests"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    replaceFile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-                /** @description 要替换的文件ID */
-                file_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * Format: binary
-                     * @description 新上传的替换文件
-                     */
-                    file: string;
-                };
-            };
-        };
-        responses: {
-            /** @description 替换成功（若该项目配置了质检规则，将自动触发重检） */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 替换成功，已触发重新质检 */
-                        msg?: string;
-                        data?: components["schemas"]["UploadedFile"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            422: components["responses"]["UnprocessableEntity"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    deleteFile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-                /** @description 文件ID */
-                file_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 删除成功 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 删除成功 */
-                        msg?: string;
-                        data?: {
-                            /**
-                             * @description 删除后剩余数量
-                             * @example 2
-                             */
-                            remaining_count: number;
-                        };
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    getQualityCheckResult: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回质检结果（含未配置质检规则的跳过分支） */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: components["schemas"]["QualityCheckResult"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    triggerQualityCheck: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-                /** @description 步骤ID */
-                step_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description 触发方式
-                     * @example manual
-                     * @enum {string}
-                     */
-                    trigger_type?: "auto" | "manual";
-                };
-            };
-        };
-        responses: {
-            /** @description 质检任务已提交/完成 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 质检完成 */
-                        msg?: string;
-                        data?: components["schemas"]["QualityCheckResult"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            409: components["responses"]["Conflict"];
-            422: components["responses"]["UnprocessableEntity"];
-            /** @description AI 质检并发超限（最多 32 个并发请求）。响应头含 Retry-After / X-RateLimit-* 标准限流字段。 */
-            429: {
-                headers: {
-                    /** @description 建议重试等待秒数 */
-                    "Retry-After"?: number;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 40002 */
-                        code?: number;
-                        /** @example 质检服务繁忙，请稍后重试 */
-                        msg?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            500: components["responses"]["InternalServerError"];
-            /** @description AI 服务超时 */
-            504: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 40001 */
-                        code?: number;
-                        /** @example 检测失败，请检查网络后重试 */
-                        msg?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-        };
-    };
-    listExportTasks: {
-        parameters: {
-            query?: {
-                /** @description 按任务状态过滤 */
-                status?: "pending" | "processing" | "completed" | "failed";
-                /** @description 页码（从 1 开始） */
-                page?: number;
-                /** @description 每页数量 */
-                page_size?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回任务列表（分页） */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: {
-                            items: components["schemas"]["ExportTask"][];
-                            /**
-                             * @description 总任务数
-                             * @example 35
-                             */
-                            total: number;
-                            /** @example 1 */
-                            page: number;
-                            /** @example 20 */
-                            page_size: number;
-                        };
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    createExportTask: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description 幂等键（UUID v4 建议）。客户端为每次请求生成唯一键，相同键的重复请求返回首次结果，避免网络重试导致重复创建。有效窗口 24 小时。适用于所有 POST 接口。 */
-                "Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                /** @description 材料实例ID */
-                material_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    /**
-                     * @description 要导出的步骤ID列表，空数组表示全部导出
-                     * @example []
-                     */
-                    step_ids?: string[];
-                    /**
-                     * @description 导出类型：single-单选/multi-多选/all-全部
-                     * @example all
-                     * @enum {string}
-                     */
-                    export_type?: "single" | "multi" | "all";
-                };
-            };
-        };
-        responses: {
-            /** @description 导出任务已创建 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example 导出任务已创建 */
-                        msg?: string;
-                        data?: components["schemas"]["ExportTask"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            /** @description 存在未完成的项目 */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 50001 */
-                        code?: number;
-                        /** @example 以下项目尚未完成，无法导出：营业场所照片、安全管理制度 */
-                        msg?: string;
-                        data?: {
-                            /** @description 未完成项目详情列表（含 step_name，前端可直接渲染提示文案） */
-                            incomplete_steps: {
-                                /** @example step_photo */
-                                step_id: string;
-                                /** @example 营业场所照片 */
-                                step_name: string;
-                                /**
-                                 * @description 未完成原因：form_incomplete-表单未填完/image_insufficient-图片数量不足/quality_failed-质检未通过
-                                 * @example image_insufficient
-                                 * @enum {string}
-                                 */
-                                reason: "form_incomplete" | "image_insufficient" | "quality_failed";
-                            }[];
-                        };
-                    };
-                };
-            };
-            422: components["responses"]["UnprocessableEntity"];
-            429: components["responses"]["TooManyRequests"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    getExportTask: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 导出任务ID */
-                task_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description 成功返回任务状态 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 0 */
-                        code?: number;
-                        /** @example success */
-                        msg?: string;
-                        data?: components["schemas"]["ExportTask"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    downloadExportFile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description 导出任务ID */
-                task_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description PDF文件流 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/pdf": string;
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["NotFound"];
-            /** @description 文件尚未生成完成 */
-            409: {
-                headers: {
-                    /** @description 建议重试等待秒数 */
-                    "Retry-After"?: number;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @example 50002 */
-                        code?: number;
-                        /** @example 文件正在生成中，请稍后再试 */
-                        msg?: string;
-                        /** @example null */
-                        data?: Record<string, never> | null;
-                    };
-                };
-            };
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-}
+
+export interface external {}
