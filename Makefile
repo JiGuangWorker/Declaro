@@ -1,4 +1,4 @@
-.PHONY: help check-structure lint vet test-server build-server dev-server tidy-server check-all dev-web build-web dev-uniapp build-uniapp
+.PHONY: help check-structure lint vet test-server build-server dev-server tidy-server check-all dev-web build-web dev-uniapp build-uniapp generate-types check-types
 
 # 默认目标
 help:
@@ -19,6 +19,10 @@ help:
 	@echo "  Web 端:"
 	@echo "    make dev-web            启动 Web 开发模式"
 	@echo "    make build-web          构建 Web 端"
+	@echo ""
+	@echo "  类型生成:"
+	@echo "    make generate-types     从 openapi.yaml 生成 TS 类型"
+	@echo "    make check-types       校验类型是否与 openapi.yaml 同步"
 	@echo ""
 	@echo "  UniApp 端:"
 	@echo "    make dev-uniapp         启动 UniApp 开发模式"
@@ -51,7 +55,7 @@ REQUIRED_FILES := \
 	uniapp/packages/app/src/pages.json uniapp/packages/app/src/manifest.json \
 	uniapp/packages/app/src/App.vue uniapp/packages/app/src/main.ts \
 	uniapp/packages/app/vite.config.ts uniapp/packages/app/tsconfig.json \
-	shared/README.md \
+	shared/README.md shared/api-types/index.ts \
 	docs/prd/README.md docs/design/README.md docs/qa/README.md docs/references/README.md
 
 check-structure:
@@ -110,3 +114,12 @@ dev-uniapp:
 
 build-uniapp:
 	cd uniapp && pnpm build
+
+# ============================================================
+# 类型生成（shared/api-types/）
+# ============================================================
+generate-types:
+	cd shared && npm install && npm run generate-types
+
+check-types:
+	cd shared && npm install && npm run check-types
