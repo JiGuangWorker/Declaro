@@ -8,11 +8,13 @@ import { ApiError, ErrSegment, segmentOf } from './errcode'
 /**
  * 统一请求封装（基于 uni.request）。
  *
- * 对齐 Issue #3 验收标准：
- * 1. token 注入：请求拦截器自动加 `Authorization: Bearer <token>`；401 触发重登
+ * 合并 Issue #3（请求规范）与 Issue #5（401 队列重放）：
+ * 1. token 注入：请求拦截器自动加 `Authorization: Bearer <token>`
  * 2. 错误码处理：统一拦截 code≠0 响应，按段位（1xxxx/3xxxx…）路由提示
  * 3. 幂等键：POST 请求自动生成 `Idempotency-Key`（UUID v4）
  * 4. 限流处理：429 读取 Retry-After，提示用户等待
+ * 5. 401 队列重放（Issue #5）：注入 setAuth 后，token 过期/失效时入队，
+ *    静默重登或续签成功后重放原请求；未注入时退化为清 token + 跳登录
  */
 
 /** 后端统一响应信封：{ code, msg, data }，code=0 表成功 */
@@ -41,7 +43,7 @@ export interface RequestOptions {
   idempotencyKey?: string
 }
 
-/** 401 未授权处理器：默认清 token + 跳登录页；Issue #5 可覆盖为静默重登+重放 */
+/** 401 默认处理器：清 token + 跳登录页 */
 type UnauthorizedHandler = () => void | Promise<void>
 
 let unauthorizedHandler: UnauthorizedHandler = defaultUnauthorizedHandler
@@ -52,9 +54,48 @@ function defaultUnauthorizedHandler(): void {
   uni.reLaunch({ url: '/pages/login/index' })
 }
 
-/** 覆盖默认 401 处理（Issue #5 静默重登时注入，内部应自行做并发去重） */
+/** 覆盖默认 401 处理（未注入 setAuth 时生效） */
 export function setUnauthorizedHandler(fn: UnauthorizedHandler): void {
   unauthorizedHandler = fn
+}
+
+// ----------------------------------------------------------------------------
+// Issue #5：401 队列重放机制
+// ----------------------------------------------------------------------------
+
+type SilentLoginFn = () => Promise<boolean>
+type RefreshTokenFn = () => Promise<string>
+
+let silentLoginFn: SilentLoginFn | null = null
+let refreshTokenFn: RefreshTokenFn | null = null
+
+/**
+ * 注入静默重登 / token 续签实现（由 store/modules/auth.ts 调用）。
+ * 注入后 401 走队列重放，不再触发默认 unauthorizedHandler。
+ */
+export function setAuth(silentLogin: SilentLoginFn, refreshToken: RefreshTokenFn): void {
+  silentLoginFn = silentLogin
+  refreshTokenFn = refreshToken
+}
+
+let isRefreshing = false
+const retryQueue: Array<{
+  options: RequestOptions
+  resolve: (value: unknown) => void
+  reject: (reason: unknown) => void
+}> = []
+
+function flushQueue(token: string): void {
+  for (const item of retryQueue) {
+    item.options.header = { ...item.options.header, Authorization: `Bearer ${token}` }
+    void request<unknown>(item.options).then(item.resolve, item.reject)
+  }
+  retryQueue.length = 0
+}
+
+function failAllQueue(error: unknown): void {
+  for (const item of retryQueue) item.reject(error)
+  retryQueue.length = 0
 }
 
 /** 业务码段位的服务端 msg 缺失兜底文案 */
@@ -101,11 +142,55 @@ function parseRetryAfter(val: string | undefined): number | undefined {
   return undefined
 }
 
+/** 10002 = token 过期（走续签）；10001 = 未授权（走静默重登） */
+const CODE_TOKEN_EXPIRED = 10002
+
+/**
+ * 401 队列重放入口：当前请求入队，触发刷新/重登，成功后重放整队。
+ * 未注入 setAuth 时不应被调用（由 request 内部判断）。
+ */
+function enqueue401Retry<T>(
+  options: RequestOptions,
+  code: number,
+  resolve: (value: T | PromiseLike<T>) => void,
+  reject: (reason: unknown) => void,
+): void {
+  retryQueue.push({ options, resolve: resolve as (v: unknown) => void, reject })
+
+  if (isRefreshing) return
+  isRefreshing = true
+
+  // 10002 过期优先走续签；其余（含 10001）走静默重登
+  const refresh =
+    code === CODE_TOKEN_EXPIRED && refreshTokenFn ? refreshTokenFn : silentLoginFn
+  if (!refresh) {
+    isRefreshing = false
+    failAllQueue(new ApiError({ code, msg: '重新登录失败', httpStatus: 401 }))
+    return
+  }
+
+  void refresh()
+    .then((result) => {
+      isRefreshing = false
+      // silentLogin 返回 boolean；refreshToken 返回 string（非空即成功）
+      const ok = typeof result === 'string' ? !!result : result
+      if (ok) {
+        flushQueue(getToken() || '')
+      } else {
+        failAllQueue(new ApiError({ code, msg: '重新登录失败', httpStatus: 401 }))
+      }
+    })
+    .catch((e) => {
+      isRefreshing = false
+      failAllQueue(e)
+    })
+}
+
 /**
  * 统一请求入口。
  *
  * 成功：resolve 出 body.data（已脱壳）。
- * 失败：reject 出 ApiError，并已按段位 toast 提示（401 除外，交由 handler）。
+ * 失败：reject 出 ApiError，并已按段位 toast 提示（401 除外，交由 handler/重放）。
  */
 export function request<T = unknown>(options: RequestOptions): Promise<T> {
   const {
@@ -159,13 +244,19 @@ export function request<T = unknown>(options: RequestOptions): Promise<T> {
           )
         }
 
-        // 1) 401 未授权：触发重登流程（不 toast，静默重登场景不打扰用户）
+        // 1) 401 未授权
         if (status === 401) {
           const body = res.data as Partial<ApiEnvelope> | undefined
+          const code = body?.code ?? 10001
+          // Issue #5 路径：注入了 setAuth，走队列重放
+          if (silentLoginFn && refreshTokenFn) {
+            return enqueue401Retry<T>(options, code, resolve, reject)
+          }
+          // 默认路径：清 token + 跳登录（Issue #3 行为，测试覆盖）
           void unauthorizedHandler()
           return reject(
             new ApiError({
-              code: body?.code ?? 10001,
+              code,
               msg: body?.msg || '登录已过期，请重新登录',
               httpStatus: status,
             }),
@@ -180,15 +271,15 @@ export function request<T = unknown>(options: RequestOptions): Promise<T> {
         }
 
         // 2) 业务码非 0 或非 2xx：按段位路由提示
-        const code = body?.code ?? -1
-        const segment = segmentOf(code)
+        const errCode = body?.code ?? -1
+        const segment = segmentOf(errCode)
         const msg =
           body?.msg || SEGMENT_FALLBACK_MSG[segment] || '请求失败，请稍后重试'
 
         if (status >= 500) toast('服务异常，请稍后重试')
         else toast(msg)
 
-        return reject(new ApiError({ code, msg, httpStatus: status }))
+        return reject(new ApiError({ code: errCode, msg, httpStatus: status }))
       },
       fail: () => {
         // 网络层失败（超时、断网、DNS 等）

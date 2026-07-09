@@ -1,6 +1,6 @@
 <!-- Copyright (c) 2026 Declaro. All rights reserved. -->
 <script setup lang="ts">
-// 首页占位：具体内容见后续 Issue
+// 首页：材料制作入口导航。具体内容随后续 Issue 丰富。
 function goTemplates() {
   uni.navigateTo({ url: '/pages/templates/index' })
 }
