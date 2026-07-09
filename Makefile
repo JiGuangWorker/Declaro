@@ -1,4 +1,4 @@
-.PHONY: help check-structure lint test-server build-server dev-web dev-uniapp
+.PHONY: help check-structure lint vet test-server build-server dev-server tidy-server check-all dev-web build-web dev-uniapp build-uniapp
 
 # 默认目标
 help:
@@ -6,12 +6,15 @@ help:
 	@echo ""
 	@echo "  校验:"
 	@echo "    make check-structure    目录结构校验"
-	@echo "    make lint               代码静态分析"
+	@echo "    make lint               代码静态分析（golangci-lint）"
+	@echo "    make vet                Go 静态检查（go vet）"
+	@echo "    make check-all          全量校验（lint + 结构 + 测试）"
 	@echo ""
 	@echo "  服务端:"
 	@echo "    make test-server        运行服务端测试"
 	@echo "    make build-server       构建服务端"
 	@echo "    make dev-server         启动服务端开发模式"
+	@echo "    make tidy-server        整理 go.mod 依赖"
 	@echo ""
 	@echo "  Web 端:"
 	@echo "    make dev-web            启动 Web 开发模式"
@@ -68,6 +71,9 @@ check-structure:
 lint:
 	cd server && golangci-lint run ./...
 
+vet:
+	cd server && go vet ./...
+
 # ============================================================
 # 服务端
 # ============================================================
@@ -79,6 +85,13 @@ build-server:
 
 dev-server:
 	cd server && go run ./cmd/server
+
+tidy-server:
+	cd server && go mod tidy
+
+# 全量校验门禁：CI 必须全绿才能进审/合并
+check-all: check-structure lint vet test-server
+	@echo "OK: all checks passed"
 
 # ============================================================
 # Web 端

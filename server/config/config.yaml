@@ -1,15 +1,45 @@
-# Server configuration
+# ============================================================
+# Declaro Server 配置
+# 所有配置项均可通过环境变量覆盖，前缀 DECLARO_，层级用 _ 分隔
+# 例：DECLARO_SERVER_PORT=9090 覆盖 server.port
+#     DECLARO_DATABASE_DSN=xxx 覆盖 database.dsn
+# ============================================================
+
 server:
   port: 8080
-  mode: debug
+  mode: debug              # debug / release / test
 
-# Database configuration
 database:
   driver: mysql
-  dsn: root:password@tcp(127.0.0.1:3306)/declaro?charset=utf8mb4&parseTime=True
+  dsn: root:password@tcp(127.0.0.1:3306)/declaro?charset=utf8mb4&parseTime=True&loc=Local
+  max_open_conns: 50
+  max_idle_conns: 10
+  conn_max_lifetime: 30m   # 连接最大存活时间
 
-# Redis configuration
 redis:
   addr: 127.0.0.1:6379
   password: ""
   db: 0
+  pool_size: 10
+
+jwt:
+  secret: declaro-dev-secret-change-me   # 生产环境必须通过环境变量覆盖
+  expire: 7200                           # 秒，2 小时
+  issuer: declaro
+
+wechat:
+  appid: ""                               # 微信小程序 AppID
+  secret: ""                              # 微信小程序 Secret
+  code2session_url: https://api.weixin.qq.com/sns/jscode2session
+
+log:
+  level: debug            # debug / info / warn / error
+  format: console         # console / json
+  output: stdout          # stdout / file
+  file_path: logs/server.log
+
+storage:
+  driver: local           # local / oss / cos（v1.0.0 仅实现 local）
+  local:
+    base_dir: ./uploads
+    base_url: http://localhost:8080/static
