@@ -1,0 +1,52 @@
+# golangci-lint 配置
+# 文档：https://golangci-lint.run/usage/configuration/
+# 本地运行：make lint（等价于 cd server && golangci-lint run ./...）
+
+run:
+  timeout: 5m
+  go: "1.26"
+  modules-download-mode: readonly
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck      # 强制检查 error 返回值
+    - govet         # Go 官方静态分析
+    - staticcheck   # 高级静态分析（SA 系列）
+    - gosimple      # 简化代码建议（S 系列）
+    - unused        # 未使用的变量/函数/导入
+    - revive        # 替代 golint，可配置规则
+    - misspell      # 拼写检查
+    - ineffassign   # 无效赋值检测
+    - typecheck     # 类型检查
+    - gofmt         # 格式化检查
+    - gocritic      # 代码改进建议
+
+linters-settings:
+  revive:
+    severity: warning
+    rules:
+      - name: exported
+        disabled: true             # 暂不强制导出符号注释，避免样板噪音
+      - name: var-naming
+        arguments: [["ID", "URL", "API"], []]  # 大写缩写白名单
+      - name: package-comments
+        disabled: true
+  misspell:
+    locale: US
+    ignore-words: []
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-rules:
+    - path: _test\.go
+      linters: [errcheck, gocritic]
+    # main 包允许直接调用 os.Exit / log.Fatal
+    - path: cmd/server/main\.go
+      linters: [gocritic]
+  exclude-use-default: false
