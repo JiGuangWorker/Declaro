@@ -1,0 +1,26 @@
+import { describe, it, expect, vi } from 'vitest'
+
+vi.mock('../packages/app/src/api/request', () => ({
+  request: vi.fn(),
+  setAuth: vi.fn(),
+}))
+
+import { wxLogin } from '../packages/app/src/api/auth'
+import { request } from '../packages/app/src/api/request'
+
+describe('auth API', () => {
+  it('调用 POST /api/v1/auth/wx-login 且 noAuth', async () => {
+    vi.mocked(request).mockResolvedValue({
+      code: 0, msg: 'ok', data: { session_token: 't', expires_in: 7200 },
+    })
+
+    await wxLogin({ code: 'test_code' })
+
+    expect(request).toHaveBeenCalledWith({
+      url: '/api/v1/auth/wx-login',
+      method: 'POST',
+      data: { code: 'test_code' },
+      noAuth: true,
+    })
+  })
+})

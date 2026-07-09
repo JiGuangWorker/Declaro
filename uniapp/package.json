@@ -7,6 +7,13 @@
     "dev:h5": "pnpm --filter @declaro/uniapp-app dev:h5",
     "dev:mp-weixin": "pnpm --filter @declaro/uniapp-app dev:mp-weixin",
     "build:h5": "pnpm --filter @declaro/uniapp-app build:h5",
-    "build:mp-weixin": "pnpm --filter @declaro/uniapp-app build:mp-weixin"
+    "build:mp-weixin": "pnpm --filter @declaro/uniapp-app build:mp-weixin",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "1",
+    "vitest": "^1.6.1"
   }
 }
