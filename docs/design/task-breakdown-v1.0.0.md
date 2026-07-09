@@ -216,6 +216,8 @@ graph TD
 | 4 | 限流处理 | 收到 429 读取 `Retry-After` header，提示用户等待 |
 | 5 | 本地缓存 | 提供 `saveFormLocal(material_id, step_id, fields)` / `getFormLocal()` 工具，断网可读 |
 | 6 | 路由骨架 | pages.json 配置首页/模板列表/材料填写/导出等基础路由 |
+| 7 | 单元测试 | `pnpm --filter @declaro/uniapp-app test` 全部通过；覆盖 api/errcode、api/request、utils/uuid、utils/storage、utils/form-cache、config、store/modules/user、pages.json 全部模块 |
+| 8 | 覆盖率门槛 | `pnpm --filter @declaro/uniapp-app test:coverage` 行覆盖 ≥80%、函数覆盖 ≥80%、分支覆盖 ≥75%（vitest.config.ts thresholds 强制；当前实际：100% 行 / 100% 函数 / 94% 分支） |
 
 **技术要点：**
 - 请求封装基于 uni.request，统一 try/catch

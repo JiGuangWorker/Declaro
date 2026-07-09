@@ -19,7 +19,12 @@ export const useUserStore = defineStore('user', () => {
   const token = ref<string | null>(getToken())
 
   /** 当前是否处于有效登录态（token 存在且未过期） */
-  const isLogged = computed(() => isTokenValid())
+  const isLogged = computed(() => {
+    // 显式依赖 token.value 触发响应式重算：isTokenValid 内部读 storage（非响应式），
+    // 若无此依赖，setSession/logout/refresh 更新 token.value 后 isLogged 不会重算。
+    if (!token.value) return false
+    return isTokenValid()
+  })
 
   /** 写入会话（登录成功后调用） */
   function setSession(sessionToken: string, expiresInSec: number): void {
