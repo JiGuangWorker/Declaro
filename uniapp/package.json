@@ -4,7 +4,9 @@
   "version": "0.0.1",
   "description": "Declaro UniApp 移动端",
   "scripts": {
-    "dev:app": "pnpm --filter @declaro/uniapp-app dev",
-    "build:app": "pnpm --filter @declaro/uniapp-app build"
+    "dev:h5": "pnpm --filter @declaro/uniapp-app dev:h5",
+    "dev:mp-weixin": "pnpm --filter @declaro/uniapp-app dev:mp-weixin",
+    "build:h5": "pnpm --filter @declaro/uniapp-app build:h5",
+    "build:mp-weixin": "pnpm --filter @declaro/uniapp-app build:mp-weixin"
   }
 }
