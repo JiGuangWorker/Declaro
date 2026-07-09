@@ -18,17 +18,20 @@
 | quality | AI质检 | `quality/` | #14 |
 | export | 导出管理 | `export/` | #16 |
 
-每个模块固定四个文件：
+每个模块按层拆为子包，父包 `<name>.go` 负责装配：
 
 ```
 module/<name>/
-├── model.go        # 数据实体（GORM model）
-├── repository.go   # 数据访问层（仅与 DB 交互）
-├── service.go      # 业务逻辑层（不依赖 gin）
-└── handler.go      # HTTP 层（解析入参、调 service）
+├── <name>.go        # package <name>    — New() 装配三层 + Handler 类型别名
+├── model/           # package model      — 数据实体（GORM model）
+├── repository/      # package repository — 数据访问层（仅与 DB 交互）
+├── service/         # package service    — 业务逻辑层（不依赖 gin）
+└── handler/         # package handler    — HTTP 层（解析入参、调 service）
 ```
 
-> 模块极简时（如 health 只读自检）可只保留 handler.go，不必强凑四层。
+> **为什么子包 + 父包封装**：模块复杂后单文件撑不住，按层拆子包可独立扩展；
+> 父包 `New()` 收口装配，`compositor` 只导入父包（唯一命名），避免 8 个模块的 `model`/`repository` 同名包冲突。
+> 模块极简时（如 health 只读自检）可只保留单个 `handler.go`，不必强凑四层。
 
 ## 2. 分层职责
 
@@ -36,7 +39,7 @@ module/<name>/
 |----|------|----------|------|
 | model | 定义实体与表名 | gorm | 业务逻辑、DB 操作 |
 | repository | CRUD、查询谓词 | gorm、model | 业务规则、gin、返回业务错误码 |
-| service | 业务规则、编排、外部调用 | repository、config、errcode、middleware(仅工具) | gin、直接操作 DB |
+| service | 业务规则、编排、外部调用 | repository、model、config、errcode、middleware(仅工具) | gin、直接操作 DB |
 | handler | 入参解析、调 service、返回 (data,error) | gin、service、errcode、response | 业务规则、直接 DB、直接 c.JSON |
 
 **核心红线：**
@@ -48,23 +51,55 @@ module/<name>/
 
 ## 3. 新增模块步骤（以 template 为例）
 
-### 步骤 1：创建四个文件
+### 步骤 1：创建子包目录与父包
 
 ```
 server/internal/module/template/
-├── model.go
-├── repository.go
-├── service.go
-└── handler.go
+├── template.go      # package template — New() 装配 + Handler 类型别名
+├── model/
+│   └── template.go  # package model — Template 实体
+├── repository/
+│   └── repository.go # package repository
+├── service/
+│   └── service.go   # package service
+└── handler/
+    └── handler.go   # package handler
 ```
 
-照 `auth/` 抄写，改包名、改实体、改方法。model.go 的实体字段对齐 openapi.yaml 中对应 schema（如 `Template`）。
+照 `auth/` 抄写，改包名、改实体、改方法。各子包内文件可按实体拆分（如 `model/user.go`、`model/session.go`）以支撑复杂场景。model 实体字段对齐 openapi.yaml 中对应 schema（如 `Template`）。
+
+父包 `template.go` 固定写法：
+
+```go
+package template
+
+import (
+    "gorm.io/gorm"
+    "go.uber.org/zap"
+    "github.com/declaro/server/internal/config"
+    "github.com/declaro/server/internal/module/template/handler"
+    "github.com/declaro/server/internal/module/template/repository"
+    "github.com/declaro/server/internal/module/template/service"
+)
+
+// Handler 对外暴露的 handler 类型别名，避免外部包直接导入 handler 子包。
+type Handler = handler.Handler
+
+// New 装配 template 模块：repo → service → handler。
+func New(cfg *config.Config, db *gorm.DB, logger *zap.Logger) *handler.Handler {
+    repo := repository.New(db)
+    svc := service.New(repo, cfg, logger)
+    return handler.New(svc)
+}
+```
 
 ### 步骤 2：在 compositor 装配
 
-`server/internal/compositor/compositor.go`：
+`server/internal/compositor/compositor.go`，只需导入父包并调用 `New()`：
 
 ```go
+import "github.com/declaro/server/internal/module/template"
+
 type Compositor struct {
     Health   *health.Handler
     Auth     *auth.Handler
@@ -72,15 +107,10 @@ type Compositor struct {
 }
 
 func New(cfg *config.Config, db *gorm.DB, rdb *redis.Client, logger *zap.Logger) *Compositor {
-    // template 模块
-    tplRepo := template.NewRepository(db)
-    tplService := template.NewService(tplRepo, cfg, logger)
-    tplHandler := template.NewHandler(tplService)
-
     return &Compositor{
         Health:   health.NewHandler(db, rdb),
-        Auth:     authHandler,
-        Template: tplHandler,   // 新增
+        Auth:     auth.New(cfg, db, logger),
+        Template: template.New(cfg, db, logger),   // 新增
     }
 }
 ```
@@ -123,20 +153,20 @@ func (h *Handler) Get(c *gin.Context) (interface{}, error) {
 }
 ```
 
-**传递与查询**（service → repository）：
+**传递与查询**（service → repository，跨子包引用用 `model.` 限定）：
 
 ```go
-// service 把 openid 显式传给 repository
-func (s *Service) Get(ctx context.Context, openid, id string) (*Material, error) {
+// service/service.go — 把 openid 显式传给 repository
+func (s *Service) Get(ctx context.Context, openid, id string) (*model.Material, error) {
     m, err := s.repo.FindByID(ctx, openid, id)
     if err != nil { return nil, errcode.ErrDBOperation }
     if m == nil { return nil, errcode.ErrNotFound }
     return m, nil
 }
 
-// repository 查询必须带 openid 谓词
-func (r *Repository) FindByID(ctx context.Context, openid, id string) (*Material, error) {
-    var m Material
+// repository/repository.go — 查询必须带 openid 谓词
+func (r *Repository) FindByID(ctx context.Context, openid, id string) (*model.Material, error) {
+    var m model.Material
     err := r.db.WithContext(ctx).
         Where("openid = ? AND id = ?", openid, id).   // 双谓词，缺一不可
         First(&m).Error
@@ -193,12 +223,12 @@ type CreateInput struct {
 
 新增模块时照 `auth/` 抄，改这几处即可：
 
-1. 包名 `auth` → `<name>`
-2. `User` 实体 → 对应 schema 实体
-3. `Repository` 方法 → 该模块的 CRUD
-4. `Service` 业务方法 → 对应 openapi operationId
-5. `Handler` 方法 → 对应 HTTP 路由
-6. compositor 加字段 + 装配
+1. 父包 `<name>.go`：包名 `auth` → `<name>`，`New()` 内部装配保持不变
+2. `model/` 子包：`User` 实体 → 对应 schema 实体（复杂时可拆多文件）
+3. `repository/` 子包：`Repository` 方法 → 该模块的 CRUD
+4. `service/` 子包：`Service` 业务方法 → 对应 openapi operationId
+5. `handler/` 子包：`Handler` 方法 → 对应 HTTP 路由
+6. compositor 加字段 + `New()` 调用
 7. router 加路由
 
 ## 9. 参考

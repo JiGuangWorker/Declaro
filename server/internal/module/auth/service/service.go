@@ -1,6 +1,8 @@
 // Copyright (c) 2026 Declaro. All rights reserved.
 
-package auth
+// Package service 提供 auth 模块的业务逻辑层。
+// 不依赖 gin，方法签名收 context.Context，便于单测与复用。
+package service
 
 import (
 	"context"
@@ -14,18 +16,21 @@ import (
 
 	"github.com/declaro/server/internal/config"
 	"github.com/declaro/server/internal/middleware"
+	"github.com/declaro/server/internal/module/auth/model"
+	"github.com/declaro/server/internal/module/auth/repository"
 	"github.com/declaro/server/pkg/errcode"
 )
 
-// Service 业务逻辑层。不依赖 gin，只接收 context.Context，便于单测与复用。
+// Service auth 模块业务逻辑层。
 type Service struct {
-	repo   *Repository
+	repo   *repository.Repository
 	cfg    *config.Config
 	logger *zap.Logger
 	client *http.Client
 }
 
-func NewService(repo *Repository, cfg *config.Config, logger *zap.Logger) *Service {
+// New 构造 Service。
+func New(repo *repository.Repository, cfg *config.Config, logger *zap.Logger) *Service {
 	return &Service{
 		repo:   repo,
 		cfg:    cfg,
@@ -75,7 +80,7 @@ func (s *Service) WxLogin(ctx context.Context, in *WxLoginInput) (*WxLoginResult
 		return nil, errcode.ErrDBOperation
 	}
 	if u == nil {
-		u = &User{OpenID: openid}
+		u = &model.User{OpenID: openid}
 		if err := s.repo.Create(ctx, u); err != nil {
 			s.logger.Error("create user", zap.Error(err), zap.String("openid", openid))
 			return nil, errcode.ErrDBOperation

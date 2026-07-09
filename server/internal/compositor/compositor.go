@@ -27,15 +27,11 @@ type Compositor struct {
 	// Template / Material / Step / Form / File / Quality / Export
 }
 
-// New 装配全部 module。调用顺序遵循分层依赖：repo → service → handler。
+// New 装配全部 module。各模块通过自身的 New() 完成 repo → service → handler 内部装配，
+// compositor 只负责按依赖顺序调用并持有 handler 引用。
 func New(cfg *config.Config, db *gorm.DB, rdb *redis.Client, logger *zap.Logger) *Compositor {
-	// auth 模块
-	authRepo := auth.NewRepository(db)
-	authService := auth.NewService(authRepo, cfg, logger)
-	authHandler := auth.NewHandler(authService)
-
 	return &Compositor{
 		Health: health.NewHandler(db, rdb),
-		Auth:   authHandler,
+		Auth:   auth.New(cfg, db, logger),
 	}
 }

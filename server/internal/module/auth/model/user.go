@@ -1,16 +1,8 @@
 // Copyright (c) 2026 Declaro. All rights reserved.
 
-// Package auth 鉴权模块：微信小程序登录、session_token 签发。
-//
-// 本模块同时作为后端业务模块的三层编写样板：
-//
-//	model.go      —— 数据实体（GORM model）
-//	repository.go —— 数据访问层（仅与 DB 交互，不含业务规则）
-//	service.go    —— 业务逻辑层（不依赖 gin，只收 context.Context）
-//	handler.go    —— HTTP 层（解析入参、调 service、组装出参）
-//
-// 抄写步骤见 server/internal/module/README.md。
-package auth
+// Package model 定义 auth 模块的数据实体（GORM model）。
+// 仅描述表结构与字段，不含业务规则与 DB 操作。
+package model
 
 import (
 	"time"
