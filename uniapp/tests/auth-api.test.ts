@@ -9,9 +9,11 @@ import { wxLogin } from '../packages/app/src/api/auth'
 import { request } from '../packages/app/src/api/request'
 
 describe('auth API', () => {
-  it('调用 POST /api/v1/auth/wx-login 且 noAuth', async () => {
+  it('调用 POST /api/v1/auth/wx-login 且 skipAuth', async () => {
+    // request 脱壳返回 data（成功时即 { session_token, expires_in }）
     vi.mocked(request).mockResolvedValue({
-      code: 0, msg: 'ok', data: { session_token: 't', expires_in: 7200 },
+      session_token: 't',
+      expires_in: 7200,
     })
 
     await wxLogin({ code: 'test_code' })
@@ -20,7 +22,7 @@ describe('auth API', () => {
       url: '/api/v1/auth/wx-login',
       method: 'POST',
       data: { code: 'test_code' },
-      noAuth: true,
+      skipAuth: true,
     })
   })
 })

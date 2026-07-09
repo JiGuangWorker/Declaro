@@ -1,15 +1,36 @@
 <!-- Copyright (c) 2026 Declaro. All rights reserved. -->
+<script setup lang="ts">
+// 首页：材料制作入口导航。具体内容随后续 Issue 丰富。
+function goTemplates() {
+  uni.navigateTo({ url: '/pages/templates/index' })
+}
+function goExport() {
+  uni.navigateTo({ url: '/pages/export/index' })
+}
+</script>
+
 <template>
   <view class="page">
-    <text class="title">Declaro</text>
-    <text class="desc">材料制作平台</text>
+    <view class="title">Declaro 材料制作平台</view>
+    <view class="actions">
+      <button type="primary" @click="goTemplates">开始制作材料</button>
+      <button @click="goExport">导出 / 任务中心</button>
+    </view>
   </view>
 </template>
 
-<script setup lang="ts"></script>
-
 <style scoped>
-.page { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #f8f8f8; }
-.title { font-size: 48rpx; font-weight: 600; color: #333; }
-.desc { margin-top: 12rpx; font-size: 28rpx; color: #999; }
+.page {
+  padding: 48rpx 32rpx;
+}
+.title {
+  font-size: 40rpx;
+  font-weight: 600;
+  margin-bottom: 48rpx;
+}
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
 </style>

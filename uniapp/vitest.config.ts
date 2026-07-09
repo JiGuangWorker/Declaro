@@ -11,10 +11,10 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: [
-        'packages/app/src/store/token.ts',
         'packages/app/src/store/modules/auth.ts',
         'packages/app/src/api/request.ts',
         'packages/app/src/api/auth.ts',
+        'packages/app/src/utils/storage.ts',
       ],
       reporter: ['text'],
     },

@@ -19,13 +19,16 @@ Thumbs.db
 # ============================================================
 node_modules/
 dist/
+coverage/
 *.local
 
 # pnpm
 .pnpm-store/
 
-# npm (项目使用 pnpm，忽略 npm 产生的 lockfile 避免混淆)
+# lockfile（不纳入版本控制，由各环境本地 install 生成）
 package-lock.json
+pnpm-lock.yaml
+yarn.lock
 
 # ============================================================
 # Go (server)

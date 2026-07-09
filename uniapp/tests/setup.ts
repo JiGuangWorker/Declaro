@@ -10,9 +10,11 @@ export const mockStorage: Record<string, any> = {}
   removeStorageSync: vi.fn((key: string) => {
     delete mockStorage[key]
   }),
+  getStorageInfoSync: vi.fn(() => ({ keys: Object.keys(mockStorage), currentSize: 0, limitSize: 10240 })),
   login: vi.fn(),
   request: vi.fn(),
   reLaunch: vi.fn(),
+  showToast: vi.fn(),
 }
 
 beforeEach(() => {

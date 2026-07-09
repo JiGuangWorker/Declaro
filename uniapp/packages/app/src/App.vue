@@ -4,6 +4,7 @@ import { onLaunch } from '@dcloudio/uni-app'
 import { silentLogin } from './store/modules/auth'
 
 onLaunch(() => {
+  // 应用启动静默登录：成功跳首页，失败跳登录页（提供重试）
   silentLogin().then((ok) => {
     if (ok) {
       uni.reLaunch({ url: '/pages/index/index' })

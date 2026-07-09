@@ -2,6 +2,11 @@
 
 import { request } from './request'
 
+/**
+ * 微信登录接口：code → session_token。
+ * 对齐 openapi.yaml `wxLogin` operationId。
+ * skipAuth 跳过 token 注入（登录接口自身不带 token）。
+ */
 export function wxLogin(data: { code: string }) {
   return request<{
     session_token: string
@@ -11,6 +16,6 @@ export function wxLogin(data: { code: string }) {
     url: '/api/v1/auth/wx-login',
     method: 'POST',
     data: data as unknown as Record<string, unknown>,
-    noAuth: true,
+    skipAuth: true,
   })
 }

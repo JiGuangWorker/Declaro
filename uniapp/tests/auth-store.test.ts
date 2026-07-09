@@ -11,18 +11,21 @@ vi.mock('../packages/app/src/api/request', () => ({
 
 import { wxLogin } from '../packages/app/src/api/auth'
 import { silentLogin, refreshToken } from '../packages/app/src/store/modules/auth'
-import { saveToken } from '../packages/app/src/store/token'
+import { setToken } from '../packages/app/src/utils/storage'
+import { mockStorage } from './setup'
 
 const uni = (globalThis as any).uni
 
 describe('auth store', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    Object.keys(mockStorage).forEach((k) => delete mockStorage[k])
   })
 
   describe('silentLogin', () => {
     it('token 有效时直接返回 true', async () => {
-      saveToken('valid_token', 3600)
+      // 设置未过期 token（expires_at 在未来，超过 30s 缓冲）
+      setToken('valid_token', 3600)
       const result = await silentLogin()
       expect(result).toBe(true)
       expect(uni.login).not.toHaveBeenCalled()
@@ -32,9 +35,10 @@ describe('auth store', () => {
       uni.login.mockImplementation((opts: any) => {
         opts.success({ code: 'wx_code_123' })
       })
+      // request 脱壳返回 data
       vi.mocked(wxLogin).mockResolvedValue({
-        code: 0, msg: 'ok',
-        data: { session_token: 'new_token', expires_in: 7200 },
+        session_token: 'new_token',
+        expires_in: 7200,
       })
 
       const result = await silentLogin()
@@ -78,8 +82,8 @@ describe('auth store', () => {
         }
       })
       vi.mocked(wxLogin).mockResolvedValue({
-        code: 0, msg: 'ok',
-        data: { session_token: 'tk', expires_in: 7200 },
+        session_token: 'tk',
+        expires_in: 7200,
       })
 
       const result = await silentLogin()
@@ -95,8 +99,8 @@ describe('auth store', () => {
         opts.success({ code: 'code_refresh' })
       })
       vi.mocked(wxLogin).mockResolvedValue({
-        code: 0, msg: 'ok',
-        data: { session_token: 'refreshed_token', expires_in: 7200 },
+        session_token: 'refreshed_token',
+        expires_in: 7200,
       })
 
       const token = await refreshToken()
