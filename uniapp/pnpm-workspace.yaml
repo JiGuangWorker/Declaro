@@ -3,5 +3,6 @@ packages:
 
 allowBuilds:
   esbuild: true
+  vue-demi: true
   core-js: false
   core-js-pure: false

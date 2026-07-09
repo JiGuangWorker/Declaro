@@ -25,6 +25,9 @@ importers:
       '@declaro/uniapp-shared':
         specifier: workspace:*
         version: link:../shared
+      pinia:
+        specifier: ^2.2.6
+        version: 2.3.1(typescript@5.9.3)(vue@3.5.39(typescript@5.9.3))
       vue:
         specifier: ^3.5.39
         version: 3.5.39(typescript@5.9.3)
@@ -1989,6 +1992,15 @@ packages:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
 
+  pinia@2.3.1:
+    resolution: {integrity: sha512-khUlZSwt9xXCaTbbxFYBKDc/bWAGWJjOgvxETwkTN7KRm66EeT1ZdZj6i2ceh9sP2Pzqsbc704r2yngBrxBVug==}
+    peerDependencies:
+      typescript: '>=4.4.4'
+      vue: ^2.7.0 || ^3.5.11
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   pixelmatch@4.0.2:
     resolution: {integrity: sha512-J8B6xqiO37sU/gkcMglv6h5Jbd9xNER7aHzpfRdNmV4IbQBzBpe4l9XmbG+xPF/znacgu2jfEw+wHffaq/YkXA==}
     hasBin: true
@@ -2377,6 +2389,17 @@ packages:
       sugarss:
         optional: true
       terser:
+        optional: true
+
+  vue-demi@0.14.10:
+    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
         optional: true
 
   vue-router@4.4.4:
@@ -4837,6 +4860,16 @@ snapshots:
 
   pify@2.3.0: {}
 
+  pinia@2.3.1(typescript@5.9.3)(vue@3.5.39(typescript@5.9.3)):
+    dependencies:
+      '@vue/devtools-api': 6.6.4
+      vue: 3.5.39(typescript@5.9.3)
+      vue-demi: 0.14.10(vue@3.5.39(typescript@5.9.3))
+    optionalDependencies:
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+
   pixelmatch@4.0.2:
     dependencies:
       pngjs: 3.4.0
@@ -5262,6 +5295,10 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
       terser: 5.48.0
+
+  vue-demi@0.14.10(vue@3.5.39(typescript@5.9.3)):
+    dependencies:
+      vue: 3.5.39(typescript@5.9.3)
 
   vue-router@4.4.4(vue@3.5.39(typescript@5.9.3)):
     dependencies:
