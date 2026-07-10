@@ -29,14 +29,12 @@ async function retry() {
   error.value = ''
 
   try {
-    const ok = await silentLogin()
-    if (ok) {
-      uni.reLaunch({ url: '/pages/index/index' })
-    } else {
-      error.value = '网络连接失败，请检查网络后重试'
-    }
-  } catch {
-    error.value = '网络连接失败，请检查网络后重试'
+    await silentLogin()
+    uni.reLaunch({ url: '/pages/index/index' })
+  } catch (e) {
+    // silentLogin 抛出的是最后一个错误（ApiError 或 Error）
+    // ApiError 带 msg/code/httpStatus；普通 Error 只有 message
+    error.value = e instanceof Error ? e.message : '登录失败，请重试'
   } finally {
     loading.value = false
   }

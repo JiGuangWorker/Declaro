@@ -27,18 +27,25 @@ describe('config（apiBase 三级回退）', () => {
     expect(requestTimeout).toBe(30000)
   })
 
+  it('development + VITE_API_MODE=mock 用 mock base（.env.development 默认路径）', async () => {
+    vi.stubEnv('MODE', 'development')
+    vi.stubEnv('VITE_API_MODE', 'mock')
+    const { apiBase } = await import('../../config')
+    expect(apiBase).toBe('https://m1.apifoxmock.com/m1/8554967-8330741-default')
+  })
+
   it('production 无 VITE_API_MODE → ?? "prod" 兜底用 prod base', async () => {
     vi.stubEnv('MODE', 'production')
     // VITE_API_MODE 保持 delete 后的 undefined → ?? 'prod' 生效
     const { apiBase } = await import('../../config')
-    expect(apiBase).toBe('https://api.declaro.example.com')
+    expect(apiBase).toBe('https://m1.apifoxmock.com/m1/8554967-8330741-default')
   })
 
   it('production + VITE_API_MODE=mock 用 mock base', async () => {
     vi.stubEnv('MODE', 'production')
     vi.stubEnv('VITE_API_MODE', 'mock')
     const { apiBase } = await import('../../config')
-    expect(apiBase).toBe('https://mock.declaro.example.com')
+    expect(apiBase).toBe('https://m1.apifoxmock.com/m1/8554967-8330741-default')
   })
 
   it('VITE_API_BASE 优先级最高（覆盖 mode 与 VITE_API_MODE）', async () => {

@@ -1,6 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["@dcloudio/types"]
+    "types": ["@dcloudio/types", "node"],
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@api-types": ["../../../shared/api-types"]
+    }
   }
 }

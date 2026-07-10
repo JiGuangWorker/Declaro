@@ -1,4 +1,11 @@
 {
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^FormRenderer$": "@declaro/form-engine/src/FormRenderer.vue",
+      "^RenderNode$": "@declaro/form-engine/src/RenderNode.vue"
+    }
+  },
   "pages": [
     {
       "path": "pages/login/index",

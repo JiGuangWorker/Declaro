@@ -41,7 +41,8 @@ REQUIRED_DIRS := \
 	web/packages \
 	uniapp/packages uniapp/packages/app uniapp/packages/app/src \
 	uniapp/packages/app/src/pages uniapp/packages/app/src/api \
-	uniapp/packages/app/src/store uniapp/packages/shared uniapp/packages/shared/src \
+	uniapp/packages/app/src/store uniapp/packages/form-engine uniapp/packages/form-engine/src \
+	uniapp/packages/shared uniapp/packages/shared/src \
 	uniapp/tests \
 	shared/api-types shared/constants \
 	docs/prd docs/prd/mock docs/design docs/qa docs/references
@@ -55,6 +56,7 @@ REQUIRED_FILES := \
 	uniapp/packages/app/src/pages.json uniapp/packages/app/src/manifest.json \
 	uniapp/packages/app/src/App.vue uniapp/packages/app/src/main.ts \
 	uniapp/packages/app/vite.config.ts uniapp/packages/app/tsconfig.json \
+	uniapp/packages/form-engine/package.json uniapp/packages/form-engine/tsconfig.json \
 	shared/README.md shared/api-types/index.ts \
 	docs/prd/README.md docs/design/README.md docs/qa/README.md docs/references/README.md
 

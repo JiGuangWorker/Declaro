@@ -16,13 +16,18 @@ function delay(ms: number): Promise<void> {
 
 /**
  * 静默登录：token 有效则跳过；否则 wx.login() 拿 code → 调后端换 token → 落地。
- * 失败按指数退避重试最多 3 次。对齐 PRD §6（无登录态，wx.login 隐式获取）。
+ * 失败按指数退避重试最多 3 次，全部失败后抛出最后一个错误（供调用方展示）。
+ * 对齐 PRD §6（无登录态，wx.login 隐式获取）。
+ *
+ * 返回 true 表示登录成功；抛出 Error 表示全部重试耗尽。
  */
 export async function silentLogin(): Promise<boolean> {
   // token 仍有效，无需重登
   if (isTokenValid()) {
     return true
   }
+
+  let lastError: unknown = null
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
@@ -42,14 +47,18 @@ export async function silentLogin(): Promise<boolean> {
       }
 
       throw new Error('登录返回缺少 session_token')
-    } catch {
+    } catch (e) {
+      lastError = e
       if (attempt < MAX_RETRIES - 1) {
         await delay(RETRY_BASE_DELAY * Math.pow(2, attempt))
       }
     }
   }
 
-  return false
+  // 全部重试耗尽，抛出最后一个错误供调用方展示
+  throw lastError instanceof Error
+    ? lastError
+    : new Error('登录失败，请重试')
 }
 
 /**
@@ -57,8 +66,9 @@ export async function silentLogin(): Promise<boolean> {
  * 由 request.ts 的 401 队列重放机制调用。
  */
 export async function refreshToken(): Promise<string> {
-  const success = await silentLogin()
-  if (!success) {
+  try {
+    await silentLogin()
+  } catch {
     clearToken()
     throw new Error('Token 续签失败')
   }
