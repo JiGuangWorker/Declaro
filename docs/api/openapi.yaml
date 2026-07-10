@@ -7,10 +7,10 @@ info:
 servers:
   - url: http://localhost:8080
     description: "本地开发"
-  - url: https://mock.declaro.example.com
-    description: "Mock 服务器（业务部门联调用）"
-  - url: https://api.declaro.example.com
-    description: "生产环境"
+  - url: https://m1.apifoxmock.com/m1/8554967-8330741-default
+    description: "Apifox Mock 服务器（前端联调用）"
+  - url: https://m1.apifoxmock.com/m1/8554967-8330741-default
+    description: "生产环境（后端就绪后替换）"
 
 # 全局鉴权：所有业务接口默认要求 Bearer token；鉴权接口本身通过 security: [] 局部覆盖放开
 security:

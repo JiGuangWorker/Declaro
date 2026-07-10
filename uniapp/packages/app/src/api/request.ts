@@ -218,6 +218,7 @@ export function request<T = unknown>(options: RequestOptions): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     uni.request({
       url: buildUrl(url, params),
+      // @ts-expect-error @dcloudio/types 未声明 PATCH，但 wx.request / H5 实际支持
       method,
       data,
       header,
