@@ -37,6 +37,10 @@
     {
       "path": "pages/export/tasks",
       "style": { "navigationBarTitleText": "任务中心" }
+    },
+    {
+      "path": "pages/sign/index",
+      "style": { "navigationBarTitleText": "签名" }
     }
   ],
   "globalStyle": {

@@ -1,0 +1,93 @@
+// Copyright (c) 2026 Declaro. All rights reserved.
+
+/**
+ * tokens.scss
+ * 核心功能：
+ * - 作为 form-engine 的统一设计 token 源，集中定义颜色、字号、间距、分隔线与表单行尺寸。
+ * - 为「灰底页面 + 分组标题条 + 白底列表行」这类系统表单视觉提供稳定基线，避免各组件各写一套样式。
+ * 开发维护：Declaro Team
+ * 创建时间：2026-03-04
+ * 最近更新：2026-07-10
+ *
+ * 使用说明：
+ * - 在组件的 `<style scoped lang="scss">` 中通过 `@use '../styles/tokens' as *;` 引入。
+ * - 所有变量均为编译期 scss 变量，适合在 uni-app / Vue SFC 中直接复用。
+ */
+
+// ─── 语义色（tmx-ui xCoreColorUtil colors）───────────────────────────
+$color-primary: #0088FF;   // primary 主色
+$color-success: #34C759;    // success 成功
+$color-danger: #FF8D28;     // danger 危险
+$color-warn: #F7B500;       // warn 警告
+$color-error: #FF383C;      // error 错误
+$color-info: #F2F2F7;       // info 信息
+
+// ─── 文字色（中性梯度，对齐 tmx-ui）──────────────────────────────────
+$color-text: #2F3442;              // 主文本（略偏冷灰，减少生硬纯黑感）
+$color-text-secondary: #767E8D;    // 次要文本 / tips
+$color-text-placeholder: #A8B0BE;  // 占位符（弱化输入前的视觉重量）
+$color-text-link: #B5BDCA;         // 右侧箭头 / 辅助
+$color-text-disabled: #CCCCCC;      // 禁用态
+$color-text-inverse: #FFFFFF;       // 反色（深底白字）
+
+// ─── 背景 / 分隔线（列表式表单核心）──────────────────────────────────
+$color-bg: #FFFFFF;            // 卡片 / cell 行底（白色）
+$color-bg-page: #F6F7FB;          // 页面底（更轻、更透气）
+$color-bg-section-title: #F2F5FA; // 分组标题条底色（更轻，保留层级）
+$color-bg-fill: #F8F9FC;          // 填充底（签名区 / 图片占位等特殊区域）
+
+$color-divider: #E7EBF2;        // cell 行底部分隔线（更轻，减少表格感）
+$color-divider-strong: #D9DFEA; // 同行字段竖分隔线
+$color-border: #D8DEE9;         // 控件边框（卡片式输入框用，列表式不用）
+$color-border-light: #E8ECF3;   // 轻边框（hover 态）
+
+// ─── 字号阶梯 (rpx) ────────────────────────────────────────────────
+$font-size-xxs: 20rpx;
+$font-size-xs: 22rpx;
+$font-size-sm: 24rpx;
+$font-size-md: 28rpx;
+$font-size-lg: 30rpx;
+$font-size-xl: 32rpx;
+$font-size-xxl: 40rpx;
+
+// 语义字号别名
+$font-size-section-title: $font-size-lg;  // section 分组标题
+$font-size-label: $font-size-md;          // 字段 label（列表式表单左侧字段名）
+$font-size-control: $font-size-md;        // 控件输入文字
+$font-size-tips: $font-size-sm;           // tips / 辅助
+$font-size-error: $font-size-sm;          // 错误提示
+
+// ─── 圆角 ──────────────────────────────────────────────────────────
+$radius-xs: 4rpx;
+$radius-sm: 8rpx;
+$radius-md: 0rpx;      // 当前表单场景使用锐利边缘，不做外层圆角
+$radius-lg: 24rpx;
+$radius-pill: 999rpx;
+
+// ─── 间距 ──────────────────────────────────────────────────────────
+$space-xs: 8rpx;
+$space-sm: 16rpx;
+$space-md: 24rpx;
+$space-lg: 32rpx;
+$space-xl: 48rpx;
+$space-xxl: 64rpx;
+
+// ─── 边框 ──────────────────────────────────────────────────────────
+$border-width: 2rpx;       // 1px ≈ 2rpx（750 设计宽）
+$divider-width: 2rpx;      // 分隔线宽度（参考图为可感知但不突兀的细线）
+
+// ─── 控件 / 行尺寸 ─────────────────────────────────────────────────
+$control-height: 50rpx;       // 单行控件最小高（保留一点呼吸感）
+$cell-padding-v: 22rpx;       // cell 行上下内边距
+$cell-padding-h: 28rpx;       // cell 行左右内边距
+$label-width: 188rpx;         // label 固定宽度（兼容稍长中文标签，减少换行）
+$label-width-in-row: 120rpx;  // 同行布局 label 宽度
+$label-gap: 20rpx;            // label 与控件之间的间距
+$label-gap-in-row: 12rpx;     // 同行布局 label 与控件间距
+$section-padding-h: 28rpx;    // section title 左右内边距
+$section-padding-v: 18rpx;    // section title 上下内边距
+$section-margin-b: 0rpx;      // section 直接铺满页面，不保留外层卡片间距
+
+// ─── 过渡 ──────────────────────────────────────────────────────────
+$transition-fast: 0.15s ease;
+$transition-base: 0.25s ease;

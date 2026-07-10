@@ -1,4 +1,12 @@
-<!-- Copyright (c) 2026 Declaro. All rights reserved. -->
+<!--
+  fill.vue
+  核心功能：
+  - 承载材料填写页，并将表单 schema 交给 FormRenderer 进行渲染。
+  - 负责页面级背景与外层留白控制，使表单整体视觉对齐系统表单参考图。
+  开发维护：Declaro Team
+  创建时间：2026-03-04
+  最近更新：2026-07-10
+-->
 <script setup lang="ts">
 // 材料填写页：接入 @declaro/form-engine 渲染 Mock schema。
 // FormRenderer 通过 easycom 自动注册（pages.json 配置），不需要 import。
@@ -29,7 +37,7 @@ const stepId = ref(mockFormSchema.steps[0]?.id ?? '')
 <style scoped>
 .fill-page {
   min-height: 100vh;
-  padding: 24rpx;
-  background: #f5f5f5;
+  padding: 0 0 36rpx;
+  background: #f6f7fb;
 }
 </style>

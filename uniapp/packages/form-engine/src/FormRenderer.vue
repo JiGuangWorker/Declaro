@@ -1,16 +1,11 @@
 <!--
-  FormRenderer — 渲染引擎根组件。
-
-  职责（设计 §4.1 渲染流程）：
-  1. 解析 RuntimeFormSchema → RenderStep（schema-reader）
-  2. 初始化 DataStore（extractFieldDefaults）+ SignalRouter（bindings+layout）
-  3. provide 三相：EngineChannel（信号收发）+ EngineDataBinding（读写）+ RenderTreeAPI（渲染辅助）
-  4. 模板：v-for RenderNode 渲染布局树
-
-  响应性策略：DataStore 是普通 Map，通过 renderTick 版本号触发 Vue 重渲染。
-  每次 signalRouter.emit 后 renderTick++，所有 RenderTreeAPI 方法访问 renderTick.value 建立依赖。
-
-  N1 红线：树遍历逻辑抽至 useRenderTree + RenderNode.vue，本文件 ≤300 行。
+  FormRenderer.vue
+  核心功能：
+  - 作为表单引擎根组件，负责解析 schema、初始化数据与信号路由，并驱动布局树渲染。
+  - 提供页面级表单容器，让最终视觉呈现稳定的系统表单列表结构。
+  开发维护：Declaro Team
+  创建时间：2026-03-04
+  最近更新：2026-07-10
 -->
 <template>
   <!-- 微信小程序自定义组件要求单根节点，用外层 view 包裹 -->
@@ -195,10 +190,15 @@ function emitCurrentData(): void {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.form-renderer-root {
+  width: 100%;
+}
+
 .form-renderer {
   width: 100%;
 }
+
 .form-renderer-empty {
   padding: 32rpx;
   text-align: center;
